@@ -1,5 +1,8 @@
 # 🚗 Auto Inventory System
 
+[![Deploy to Production](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml)
+[![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml)
+
 Система учета автомобилей на складах с авторизацией, поиском и аналитикой.
 
 ## ✨ Возможности
@@ -18,65 +21,61 @@
 |-----------|------------|
 | Backend | Python 3.10, Flask, SQLAlchemy |
 | Frontend | HTML5, CSS3, Bootstrap 5, JavaScript |
-| Database | SQLite |
+| Database | PostgreSQL |
 | Server | Gunicorn, Nginx |
 | Security | Flask-Login, Werkzeug, SSL |
+| DevOps | GitHub Actions CI/CD |
+
+## 📊 Статистика системы (Апрель 2026)
+
+- 🚗 **Автомобилей:** 10 моделей
+- 🏷️ **Марок:** 9
+- 🏭 **Складов:** 7
+- 📦 **Всего единиц:** 36
+- 💰 **Общая стоимость:** 51,209,000 ₽
+
+### Распределение по складам:
+- **Западный склад:** 9 ед. (2 моделей)
+- **Центральный склад:** 5 ед. (2 моделей)
+- **Восточный склад:** 4 ед. (1 моделей)
+- **Питерский склад:** 8 ед. (2 моделей)
+- **Южный склад:** 3 ед. (1 моделей)
+- **Северный склад:** 7 ед. (2 моделей)
+
+## 🔗 Доступ
+
+**Production:** https://autolot25.ddns.net:8086
+
+**Демо-данные:**
+- Логин: `Евгений`
+- Пароль: `admin123`
 
 ## 🚀 Быстрый старт
 
 ### Локальная установка
 
 ```bash
-# Клонирование репозитория
 git clone https://github.com/Evgen242/auto-inventory.git
 cd auto-inventory
-
-# Создание виртуального окружения
 python3 -m venv venv
-source venv/bin/activate  # Linux/Mac
-# venv\Scripts\activate  # Windows
-
-# Установка зависимостей
+source venv/bin/activate
 pip install -r requirements.txt
-
-# Запуск приложения
 python3 run.py
-Production настройка
-# Запуск через Gunicorn
-gunicorn -w 4 -b 127.0.0.1:5000 run:app
+### Локальная установка
 
-# systemd сервис
-sudo systemctl start auto-inventory
-sudo systemctl enable auto-inventory
-📊 API Endpoints
-Метод	Endpoint	Описание	Доступ
-GET	/api/cars	Список автомобилей	Авторизованные
-POST	/api/cars	Добавить авто	Авторизованные
-GET	/api/brands	Список марок	Авторизованные
-POST	/api/brands	Добавить марку	Только админ
-GET	/api/warehouses	Список складов	Авторизованные
-POST	/api/warehouses	Добавить склад	Только админ
-GET	/api/stats	Статистика	Авторизованные
+```bash
+git clone https://github.com/Evgen242/auto-inventory.git
+cd auto-inventory
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 run.py
 👨‍💻 Автор
 Evgenii Fralou (Evgen242)
 
+GitHub: @Evgen242
+
 📝 Лицензия
-MIT License - свободное использование, модификация и распространение
+MIT License
 
-⭐️ Поставьте звезду, если проект вам полезен!
-
-## 🚀 CI/CD Status
-
-[![Deploy to Production](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml)
-[![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml)
-[![Backup](https://github.com/Evgen242/auto-inventory/actions/workflows/backup.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/backup.yml)
-
-Автоматический деплой при пуше в main ветку.
-
-## 🚀 CI/CD Status
-
-[![Deploy to Production](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml)
-[![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml)
-[![Backup](https://github.com/Evgen242/auto-inventory/actions/workflows/backup.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/backup.yml)
-
-Автоматический деплой при пуше в main ветку.
+Последнее обновление: Апрель 2026
