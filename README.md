@@ -79,3 +79,32 @@ GitHub: @Evgen242
 MIT License
 
 Последнее обновление: Апрель 2026
+
+## 🔗 Доступ
+
+**Production:** https://autolot25.ddns.net:8086
+
+**Тестовые учетные данные:**
+- Логин: `Евгений`
+- Пароль: `admin123`
+
+## 🚀 Быстрый старт
+
+### Локальная установка
+
+```bash
+git clone https://github.com/Evgen242/auto-inventory.git
+cd auto-inventory
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 run.py
+👨‍💻 Автор
+Evgenii Fralou (Evgen242)
+
+GitHub: @Evgen242
+
+📝 Лицензия
+MIT License
+
+Статистика обновляется автоматически каждые 12 часов
