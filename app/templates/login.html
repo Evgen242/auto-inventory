@@ -20,7 +20,7 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
         }
         .login-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -35,6 +35,19 @@
         .login-body {
             padding: 30px;
         }
+        .demo-info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .demo-info code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
         .form-group {
             margin-bottom: 20px;
         }
@@ -42,10 +55,6 @@
             border-radius: 10px;
             border: 1px solid #ddd;
             padding: 10px 15px;
-        }
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.25);
         }
         .btn-login {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -75,6 +84,13 @@
             <p>Вход в систему</p>
         </div>
         <div class="login-body">
+            <div class="demo-info">
+                <i class="bi bi-info-circle-fill text-primary"></i>
+                <strong>Демо-доступ:</strong><br>
+                Логин: <code>demo</code> / Пароль: <code>demo123</code><br>
+                <small class="text-muted">Демо-пользователь может только просматривать данные</small>
+            </div>
+            
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -103,6 +119,10 @@
             </form>
             <div class="register-link">
                 <p>Нет аккаунта? <a href="{{ url_for('auth.register') }}">Зарегистрироваться</a></p>
+            </div>
+            <hr class="mt-3">
+            <div class="text-center text-muted small">
+                <i class="bi bi-shield-check"></i> Зарегистрируйтесь, чтобы управлять своими данными
             </div>
         </div>
     </div>
