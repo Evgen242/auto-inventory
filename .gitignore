@@ -42,3 +42,8 @@ Thumbs.db
 *.bak
 *.backup
 *.pid
+cookies.txt
+*_cookies.txt
+session.txt
+*.cookies
+*.session

@@ -1,32 +1,67 @@
-name: Update README
+name: Update README with Latest Stats
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'  # Каждые 12 часов
+  workflow_dispatch:  # Ручной запуск
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/models/*.py'
+      - 'scripts/update_stats.py'
 
 jobs:
-  update:
+  update-stats:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v3
-      - name: Update README
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
         run: |
-          echo "# 🚗 Auto Inventory System" > README.md
-          echo "" >> README.md
-          echo "[![Deploy](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml)" >> README.md
-          echo "" >> README.md
-          echo "## 📊 Статистика" >> README.md
-          echo "- 🚗 Автомобилей: 10 моделей" >> README.md
-          echo "- 🏷️ Марок: 9" >> README.md
-          echo "- 🏭 Складов: 7" >> README.md
-          echo "- 📦 Всего единиц: 36" >> README.md
-          echo "- 💰 Общая стоимость: 51,209,000 ₽" >> README.md
-          echo "" >> README.md
-          echo "## 🔗 Доступ" >> README.md
-          echo "https://autolot25.ddns.net:8086" >> README.md
-      - name: Commit
+          pip install requests
+      
+      - name: Fetch statistics from API
         run: |
-          git config user.email "action@github.com"
-          git config user.name "GitHub Action"
-          git add README.md
-          git commit -m "Update README" || echo "No changes"
-          git push || echo "Push failed"
+          python scripts/update_stats.py
+        env:
+          PYTHONUNBUFFERED: 1
+      
+      - name: Update README with stats
+        run: |
+          # Создаем README с актуальной статистикой
+          cat > README.md << 'EOF'
+# 🚗 Auto Inventory System
+
+[![Deploy to Production](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml)
+[![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml)
+[![Update Stats](https://github.com/Evgen242/auto-inventory/actions/workflows/update-readme.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/update-readme.yml)
+
+Система учета автомобилей на складах с авторизацией, поиском и аналитикой.
+
+## ✨ Возможности
+
+- 🔐 **Авторизация** - регистрация и вход пользователей
+- 🏭 **Управление складами** - создание и отслеживание складов
+- 🏷️ **Управление марками** - добавление и удаление марок авто
+- 🚙 **Учет автомобилей** - добавление авто с указанием марки, склада, цены
+- 🔍 **Поиск и фильтрация** - поиск по модели, VIN, марке
+- 📊 **Статистика** - дашборд с графиками и аналитикой
+- 📱 **Адаптивный дизайн** - Bootstrap 5
+
+## 🛠 Технологии
+
+| Компонент | Технология |
+|-----------|------------|
+| Backend | Python 3.10, Flask, SQLAlchemy |
+| Frontend | HTML5, CSS3, Bootstrap 5, JavaScript |
+| Database | PostgreSQL |
+| Server | Gunicorn, Nginx |
+| Security | Flask-Login, Werkzeug, SSL |
+| DevOps | GitHub Actions CI/CD |
+
