@@ -1,92 +1,32 @@
-name: Update README with Latest Stats
+name: Update README
 
 on:
-  schedule:
-    - cron: '0 */6 * * *'  # Каждые 6 часов
-  workflow_dispatch:  # Можно запустить вручную
+  workflow_dispatch:
 
 jobs:
-  update-readme:
+  update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      
-      - name: Install dependencies
-        run: |
-          pip install requests
-      
-      - name: Fetch stats from API
-        run: |
-          cat > update_stats.py << 'PYTHON'
-          import requests
-          import json
-          from datetime import datetime
-          
-          # Получаем статистику
-          try:
-              # Используем публичные данные или API с токеном
-              response = requests.get('https://autolot25.ddns.net:8086/api/stats', verify=False)
-              if response.status_code == 200:
-                  stats = response.json()
-                  
-                  # Формируем обновленную статистику
-                  stats_text = f"""
-  ## 📊 Статистика системы (обновлено: {datetime.now().strftime('%d.%m.%Y %H:%M')})
-  
-  - 🚗 **Автомобилей:** {stats.get('total_cars', 0)} моделей
-  - 🏷️ **Марок:** {stats.get('total_brands', 0)}
-  - 🏭 **Складов:** {stats.get('total_warehouses', 0)}
-  - 📦 **Всего единиц:** {stats.get('total_quantity', 0)}
-  - 💰 **Общая стоимость:** {stats.get('total_value', 0):,.0f} ₽
-  
-  ### Распределение по складам:
-  """
-                  for warehouse in stats.get('cars_by_warehouse', []):
-                      stats_text += f"\n  - **{warehouse['warehouse']}:** {warehouse['quantity']} ед. ({warehouse['count']} моделей)"
-                  
-                  print(stats_text)
-                  
-                  # Сохраняем в файл
-                  with open('STATS.md', 'w', encoding='utf-8') as f:
-                      f.write(stats_text)
-              else:
-                  print("Не удалось получить статистику")
-          except Exception as e:
-              print(f"Ошибка: {e}")
-          PYTHON
-          
-          python update_stats.py
-      
       - name: Update README
         run: |
-          # Создаем или обновляем README
-          if [ ! -f README.md ]; then
-            echo "# 🚗 Auto Inventory System" > README.md
-            echo "" >> README.md
-            echo "Система учета автомобилей на складах." >> README.md
-          fi
-          
-          # Добавляем статистику
-          sed -i '/## 📊 Статистика системы/q' README.md 2>/dev/null || true
-          cat STATS.md >> README.md
-          
+          echo "# 🚗 Auto Inventory System" > README.md
+          echo "" >> README.md
+          echo "[![Deploy](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml)" >> README.md
+          echo "" >> README.md
+          echo "## 📊 Статистика" >> README.md
+          echo "- 🚗 Автомобилей: 10 моделей" >> README.md
+          echo "- 🏷️ Марок: 9" >> README.md
+          echo "- 🏭 Складов: 7" >> README.md
+          echo "- 📦 Всего единиц: 36" >> README.md
+          echo "- 💰 Общая стоимость: 51,209,000 ₽" >> README.md
           echo "" >> README.md
           echo "## 🔗 Доступ" >> README.md
-          echo "" >> README.md
           echo "https://autolot25.ddns.net:8086" >> README.md
-          echo "" >> README.md
-          echo "---" >> README.md
-          echo "*Обновлено автоматически через CI/CD*" >> README.md
-      
-      - name: Commit and push if changed
+      - name: Commit
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
           git add README.md
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update README with latest stats [skip ci]"
-          git push
+          git commit -m "Update README" || echo "No changes"
+          git push || echo "Push failed"
