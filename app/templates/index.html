@@ -1,0 +1,511 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .search-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .filter-group {
+        margin-bottom: 15px;
+    }
+    .search-result {
+        margin-top: 20px;
+    }
+    .pagination {
+        margin-top: 20px;
+    }
+    .clear-filters {
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Добро пожаловать, {{ user.username }}!</h2>
+        <p class="text-muted">Система учета автомобилей на складах</p>
+    </div>
+</div>
+
+<!-- Статистика -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <h5 class="card-title">Всего автомобилей</h5>
+                <p class="stats-number" id="totalCars">0</p>
+                <small>моделей</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <h5 class="card-title">Марки</h5>
+                <p class="stats-number" id="totalBrands">0</p>
+                <small>производителей</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <h5 class="card-title">Склады</h5>
+                <p class="stats-number" id="totalWarehouses">0</p>
+                <small>складских помещений</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body">
+                <h5 class="card-title">Общее количество</h5>
+                <p class="stats-number" id="totalQuantity">0</p>
+                <small>единиц на складах</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Поиск и фильтры -->
+<div class="search-card">
+    <h5><i class="bi bi-search"></i> Поиск и фильтры</h5>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="filter-group">
+                <label>Поиск по тексту</label>
+                <input type="text" id="searchInput" class="form-control" placeholder="Модель, VIN, марка...">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="filter-group">
+                <label>Марка</label>
+                <select id="brandFilter" class="form-control">
+                    <option value="all">Все марки</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="filter-group">
+                <label>Склад</label>
+                <select id="warehouseFilter" class="form-control">
+                    <option value="all">Все склады</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="filter-group">
+                <label>Год от</label>
+                <input type="number" id="yearFrom" class="form-control" placeholder="Год">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="filter-group">
+                <label>Год до</label>
+                <input type="number" id="yearTo" class="form-control" placeholder="Год">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="filter-group">
+                <label>Цена от (₽)</label>
+                <input type="number" id="priceFrom" class="form-control" placeholder="0">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="filter-group">
+                <label>Цена до (₽)</label>
+                <input type="number" id="priceTo" class="form-control" placeholder="1000000">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="filter-group">
+                <label>Сортировка</label>
+                <select id="sortBy" class="form-control">
+                    <option value="created_at">По дате</option>
+                    <option value="model">По модели</option>
+                    <option value="year">По году</option>
+                    <option value="price">По цене</option>
+                    <option value="quantity">По количеству</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="filter-group">
+                <label>Порядок</label>
+                <select id="sortOrder" class="form-control">
+                    <option value="desc">По убыванию</option>
+                    <option value="asc">По возрастанию</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-primary" onclick="applyFilters()">
+                <i class="bi bi-search"></i> Найти
+            </button>
+            <button class="btn btn-secondary" onclick="clearFilters()">
+                <i class="bi bi-x-circle"></i> Сбросить
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Список автомобилей -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-car-front"></i> Список автомобилей</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Марка</th>
+                                <th>Модель</th>
+                                <th>Год</th>
+                                <th>VIN</th>
+                                <th>Количество</th>
+                                <th>Цена</th>
+                                <th>Склад</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="carsList">
+                            <tr><td colspan="8" class="text-center">Загрузка...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Пагинация -->
+                <nav>
+                    <ul class="pagination justify-content-center" id="pagination"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальные окна (оставляем как было) -->
+<div class="modal fade" id="carModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить автомобиль</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="carForm">
+                    <div class="mb-3">
+                        <label class="form-label">Марка</label>
+                        <select class="form-control" id="brand_id" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Модель</label>
+                        <input type="text" class="form-control" id="model" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Год</label>
+                        <input type="number" class="form-control" id="year">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">VIN</label>
+                        <input type="text" class="form-control" id="vin">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Количество</label>
+                        <input type="number" class="form-control" id="quantity" value="1">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Цена</label>
+                        <input type="number" class="form-control" id="price" step="1000">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Склад</label>
+                        <select class="form-control" id="warehouse_id" required></select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" onclick="addCar()">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="brandModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить марку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="brandName" placeholder="Название марки">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" onclick="addBrand()">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="warehouseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить склад</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control mb-2" id="warehouseName" placeholder="Название склада">
+                <input type="text" class="form-control mb-2" id="warehouseLocation" placeholder="Местоположение">
+                <input type="number" class="form-control" id="warehouseCapacity" placeholder="Вместимость" value="100">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" onclick="addWarehouse()">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentPage = 1;
+let totalPages = 1;
+
+function buildQueryParams() {
+    const params = new URLSearchParams();
+    const search = document.getElementById('searchInput').value;
+    const brandFilter = document.getElementById('brandFilter').value;
+    const warehouseFilter = document.getElementById('warehouseFilter').value;
+    const yearFrom = document.getElementById('yearFrom').value;
+    const yearTo = document.getElementById('yearTo').value;
+    const priceFrom = document.getElementById('priceFrom').value;
+    const priceTo = document.getElementById('priceTo').value;
+    const sortBy = document.getElementById('sortBy').value;
+    const sortOrder = document.getElementById('sortOrder').value;
+    
+    if (search) params.append('search', search);
+    if (brandFilter && brandFilter !== 'all') params.append('brand_id', brandFilter);
+    if (warehouseFilter && warehouseFilter !== 'all') params.append('warehouse_id', warehouseFilter);
+    if (yearFrom) params.append('year_from', yearFrom);
+    if (yearTo) params.append('year_to', yearTo);
+    if (priceFrom) params.append('price_from', priceFrom);
+    if (priceTo) params.append('price_to', priceTo);
+    if (sortBy) params.append('sort_by', sortBy);
+    if (sortOrder) params.append('sort_order', sortOrder);
+    params.append('page', currentPage);
+    params.append('per_page', 20);
+    
+    return params;
+}
+
+async function loadCars() {
+    const params = buildQueryParams();
+    const response = await fetch(`/api/cars?${params}`);
+    const data = await response.json();
+    
+    totalPages = data.pages;
+    const tbody = document.getElementById('carsList');
+    
+    if (data.items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center">Нет автомобилей</td></tr>';
+        document.getElementById('pagination').innerHTML = '';
+        return;
+    }
+    
+    tbody.innerHTML = data.items.map(car => `
+        <tr>
+            <td>${car.brand || '-'}</td>
+            <td>${car.model}</td>
+            <td>${car.year || '-'}</td>
+            <td><code>${car.vin || '-'}</code></td>
+            <td>${car.quantity}</td>
+            <td>${car.price ? car.price.toLocaleString() + ' ₽' : '-'}</td>
+            <td>${car.warehouse || '-'}<br><small>${car.location || ''}</small></td>
+            <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteCar(${car.id})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+    
+    renderPagination();
+}
+
+function renderPagination() {
+    const pagination = document.getElementById('pagination');
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    if (currentPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage - 1})">«</a></li>`;
+    }
+    
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+            html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+        } else if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+            html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`;
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+    }
+    
+    if (currentPage < totalPages) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage + 1})">»</a></li>`;
+    }
+    
+    pagination.innerHTML = html;
+}
+
+function changePage(page) {
+    currentPage = page;
+    loadCars();
+}
+
+function applyFilters() {
+    currentPage = 1;
+    loadCars();
+}
+
+function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('brandFilter').value = 'all';
+    document.getElementById('warehouseFilter').value = 'all';
+    document.getElementById('yearFrom').value = '';
+    document.getElementById('yearTo').value = '';
+    document.getElementById('priceFrom').value = '';
+    document.getElementById('priceTo').value = '';
+    document.getElementById('sortBy').value = 'created_at';
+    document.getElementById('sortOrder').value = 'desc';
+    applyFilters();
+}
+
+async function loadStats() {
+    const response = await fetch('/api/stats');
+    const data = await response.json();
+    document.getElementById('totalCars').textContent = data.total_cars;
+    document.getElementById('totalBrands').textContent = data.total_brands;
+    document.getElementById('totalWarehouses').textContent = data.total_warehouses;
+    document.getElementById('totalQuantity').textContent = data.total_quantity;
+}
+
+async function loadBrands() {
+    const response = await fetch('/api/brands');
+    const brands = await response.json();
+    const select = document.getElementById('brand_id');
+    const filterSelect = document.getElementById('brandFilter');
+    
+    select.innerHTML = '<option value="">Выберите марку</option>' + 
+        brands.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+    
+    filterSelect.innerHTML = '<option value="all">Все марки</option>' + 
+        brands.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+}
+
+async function loadWarehouses() {
+    const response = await fetch('/api/warehouses');
+    const warehouses = await response.json();
+    const select = document.getElementById('warehouse_id');
+    const filterSelect = document.getElementById('warehouseFilter');
+    
+    select.innerHTML = '<option value="">Выберите склад</option>' + 
+        warehouses.map(w => `<option value="${w.id}">${w.name} (${w.location})</option>`).join('');
+    
+    filterSelect.innerHTML = '<option value="all">Все склады</option>' + 
+        warehouses.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
+}
+
+async function addBrand() {
+    const name = document.getElementById('brandName').value;
+    if (!name) return alert('Введите название');
+    const response = await fetch('/api/brands', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name})
+    });
+    if (response.ok) {
+        alert('Марка добавлена');
+        bootstrap.Modal.getInstance(document.getElementById('brandModal')).hide();
+        loadBrands();
+        loadStats();
+    }
+}
+
+async function addWarehouse() {
+    const name = document.getElementById('warehouseName').value;
+    const location = document.getElementById('warehouseLocation').value;
+    const capacity = document.getElementById('warehouseCapacity').value;
+    if (!name || !location) return alert('Заполните поля');
+    const response = await fetch('/api/warehouses', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name, location, capacity: parseInt(capacity)})
+    });
+    if (response.ok) {
+        alert('Склад добавлен');
+        bootstrap.Modal.getInstance(document.getElementById('warehouseModal')).hide();
+        loadWarehouses();
+        loadStats();
+    }
+}
+
+async function addCar() {
+    const carData = {
+        model: document.getElementById('model').value,
+        brand_id: parseInt(document.getElementById('brand_id').value),
+        warehouse_id: parseInt(document.getElementById('warehouse_id').value),
+        year: parseInt(document.getElementById('year').value) || null,
+        vin: document.getElementById('vin').value || null,
+        quantity: parseInt(document.getElementById('quantity').value),
+        price: parseFloat(document.getElementById('price').value) || 0
+    };
+    if (!carData.model || !carData.brand_id || !carData.warehouse_id) {
+        return alert('Заполните обязательные поля');
+    }
+    const response = await fetch('/api/cars', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(carData)
+    });
+    if (response.ok) {
+        alert('Автомобиль добавлен');
+        bootstrap.Modal.getInstance(document.getElementById('carModal')).hide();
+        loadCars();
+        loadStats();
+    }
+}
+
+async function deleteCar(id) {
+    if (!confirm('Удалить автомобиль?')) return;
+    const response = await fetch(`/api/cars/${id}`, {method: 'DELETE'});
+    if (response.ok) {
+        loadCars();
+        loadStats();
+    }
+}
+
+// Инициализация
+loadStats();
+loadBrands();
+loadWarehouses();
+loadCars();
+</script>
+{% endblock %}

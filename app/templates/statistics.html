@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Статистика и аналитика</h2>
+        <p class="text-muted">Подробная статистика по автомобилям, маркам и складам</p>
+    </div>
+</div>
+
+<div id="loading" class="text-center" style="padding: 50px;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Загрузка...</span>
+    </div>
+    <p>Загрузка статистики...</p>
+</div>
+
+<div id="stats-content" style="display: none;"></div>
+
+<script>
+async function loadStatistics() {
+    try {
+        console.log('Загрузка статистики...');
+        const response = await fetch('/stats/api/dashboard');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        console.log('Получен текст:', text.substring(0, 200));
+        
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error('Ошибка парсинга JSON:', e);
+            throw new Error('Неверный формат данных от сервера');
+        }
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        // Проверяем наличие данных
+        if (!data.overview) {
+            throw new Error('Нет данных для отображения');
+        }
+        
+        // KPI карточки
+        const kpiHtml = `
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">Всего моделей</h5>
+                            <p class="card-text" style="font-size: 32px; font-weight: bold;">${data.overview.total_cars || 0}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Марок</h5>
+                            <p class="card-text" style="font-size: 32px; font-weight: bold;">${data.overview.total_brands || 0}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <h5 class="card-title">Складов</h5>
+                            <p class="card-text" style="font-size: 32px; font-weight: bold;">${data.overview.total_warehouses || 0}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <h5 class="card-title">Единиц на складах</h5>
+                            <p class="card-text" style="font-size: 32px; font-weight: bold;">${data.overview.total_quantity || 0}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-danger">
+                        <div class="card-body">
+                            <h5 class="card-title">Общая стоимость</h5>
+                            <p class="card-text" style="font-size: 24px; font-weight: bold;">${Math.round(data.overview.total_value || 0).toLocaleString()} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-secondary">
+                        <div class="card-body">
+                            <h5 class="card-title">Средняя цена</h5>
+                            <p class="card-text" style="font-size: 24px; font-weight: bold;">${Math.round(data.overview.average_price || 0).toLocaleString()} ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-dark">
+                        <div class="card-body">
+                            <h5 class="card-title">Новых за 30 дней</h5>
+                            <p class="card-text" style="font-size: 32px; font-weight: bold;">${data.trends?.new_cars_last_30_days || 0}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Таблица по маркам
+        let brandsHtml = '';
+        if (data.by_brand && data.by_brand.length > 0) {
+            brandsHtml = `
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Распределение по маркам</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr><th>Марка</th><th>Моделей</th><th>Количество</th><th>Средняя цена</th></tr>
+                            </thead>
+                            <tbody>
+                                ${data.by_brand.map(b => `
+                                    <tr>
+                                        <td><strong>${b.brand_name || 'Неизвестно'}</strong></td>
+                                        <td>${b.count || 0}</td>
+                                        <td>${b.quantity || 0} шт.</td>
+                                        <td>${Math.round(b.avg_price || 0).toLocaleString()} ₽</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Таблица по складам
+        let warehousesHtml = '';
+        if (data.by_warehouse && data.by_warehouse.length > 0) {
+            warehousesHtml = `
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Загрузка складов</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr><th>Склад</th><th>Местоположение</th><th>Моделей</th><th>Количество</th><th>Стоимость</th><th>Загрузка</th></tr>
+                            </thead>
+                            <tbody>
+                                ${data.by_warehouse.map(w => `
+                                    <tr>
+                                        <td><strong>${w.warehouse_name || 'Неизвестно'}</strong></td>
+                                        <td>${w.location || '-'}</td>
+                                        <td>${w.count || 0}</td>
+                                        <td>${w.quantity || 0} шт.</td>
+                                        <td>${Math.round(w.value || 0).toLocaleString()} ₽</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar" style="width: ${Math.min(w.capacity_used || 0, 100)}%">
+                                                    ${Math.round(w.capacity_used || 0)}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Топ автомобилей
+        let topHtml = '';
+        if (data.top_cars) {
+            topHtml = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5>Топ 5 самых дорогих</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    ${(data.top_cars.top_by_price || []).map(car => `
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            ${car.brand || '?'} ${car.model || '?'} (${car.year || '?'})
+                                            <span class="badge bg-primary rounded-pill">${Math.round(car.price || 0).toLocaleString()} ₽</span>
+                                        </li>
+                                    `).join('') || '<li class="list-group-item">Нет данных</li>'}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h5>Топ 5 по количеству</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    ${(data.top_cars.top_by_quantity || []).map(car => `
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            ${car.brand || '?'} ${car.model || '?'} (${car.year || '?'})
+                                            <span class="badge bg-success rounded-pill">${car.quantity || 0} шт.</span>
+                                        </li>
+                                    `).join('') || '<li class="list-group-item">Нет данных</li>'}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Распределение по годам
+        let yearsHtml = '';
+        if (data.year_distribution && data.year_distribution.length > 0) {
+            yearsHtml = `
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Распределение по годам выпуска</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr><th>Год</th><th>Моделей</th><th>Количество</th></tr>
+                            </thead>
+                            <tbody>
+                                ${data.year_distribution.map(y => `
+                                    <tr>
+                                        <td>${y.year || '-'}</td>
+                                        <td>${y.count || 0}</td>
+                                        <td>${y.quantity || 0} шт.</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Собираем всё вместе
+        document.getElementById('stats-content').innerHTML = kpiHtml + brandsHtml + warehousesHtml + topHtml + yearsHtml;
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('stats-content').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+        document.getElementById('loading').innerHTML = `
+            <div class="alert alert-danger">
+                <h4>Ошибка загрузки статистики</h4>
+                <p>${error.message}</p>
+                <button class="btn btn-primary mt-3" onclick="loadStatistics()">Повторить</button>
+            </div>
+        `;
+    }
+}
+
+// Загружаем статистику
+loadStatistics();
+</script>
+{% endblock %}

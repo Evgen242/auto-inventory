@@ -1,0 +1,44 @@
+# Виртуальное окружение
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# База данных
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Логи
+*.log
+*.pid
+*.seed
+
+# Конфиги с секретами
+.env
+.env.local
+.env.production
+cookies.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# Временные файлы
+*.tmp
+*.bak
+*.backup
+*.pid
