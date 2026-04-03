@@ -487,9 +487,20 @@ async function addCar() {
     });
     if (response.ok) {
         alert('Автомобиль добавлен');
+        // Очищаем форму
+        document.getElementById('model').value = '';
+        document.getElementById('year').value = '';
+        document.getElementById('vin').value = '';
+        document.getElementById('quantity').value = '1';
+        document.getElementById('price').value = '';
+        document.getElementById('brand_id').value = '';
+        document.getElementById('warehouse_id').value = '';
         bootstrap.Modal.getInstance(document.getElementById('carModal')).hide();
         loadCars();
         loadStats();
+    } else {
+        const error = await response.json();
+        alert('Ошибка: ' + (error.error || 'Неизвестная ошибка'));
     }
 }
 
@@ -509,3 +520,15 @@ loadWarehouses();
 loadCars();
 </script>
 {% endblock %}
+
+<script>
+// Сброс формы при открытии модального окна
+document.getElementById('carModal').addEventListener('show.bs.modal', function () {
+    document.getElementById('model').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('vin').value = '';
+    document.getElementById('quantity').value = '1';
+    document.getElementById('price').value = '';
+    // Не сбрасываем brand_id и warehouse_id, так как они загружаются динамически
+});
+</script>

@@ -47,3 +47,4 @@ cookies.txt
 session.txt
 *.cookies
 *.session
+routes/requirements.txt
