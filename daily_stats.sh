@@ -1,24 +1,38 @@
 #!/bin/bash
 
 # Читаем Telegram настройки из .env
-TELEGRAM_BOT_TOKEN=$(grep "^TELEGRAM_BOT_TOKEN=" /var/www/apps/auto-inventory/.env 2>/dev/null | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
-TELEGRAM_CHAT_ID=$(grep "^TELEGRAM_CHAT_ID=" /var/www/apps/auto-inventory/.env 2>/dev/null | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
+if [ -f /var/www/apps/auto-inventory/.env ]; then
+    TELEGRAM_BOT_TOKEN=$(grep "^TELEGRAM_BOT_TOKEN=" /var/www/apps/auto-inventory/.env | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
+    TELEGRAM_CHAT_ID=$(grep "^TELEGRAM_CHAT_ID=" /var/www/apps/auto-inventory/.env | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
+fi
 
-# Получаем данные из базы данных
-DB_PATH="/var/www/apps/auto-inventory/instance/inventory.db"
-TOTAL_CARS=$(sqlite3 $DB_PATH "SELECT COUNT(*) FROM cars;" 2>/dev/null || echo "0")
-TOTAL_BRANDS=$(sqlite3 $DB_PATH "SELECT COUNT(*) FROM car_brands;" 2>/dev/null || echo "0")
-TOTAL_WAREHOUSES=$(sqlite3 $DB_PATH "SELECT COUNT(*) FROM warehouses;" 2>/dev/null || echo "0")
-TOTAL_QUANTITY=$(sqlite3 $DB_PATH "SELECT SUM(quantity) FROM cars;" 2>/dev/null || echo "0")
+# Параметры PostgreSQL
+DB_HOST="localhost"
+DB_PORT="5432"
+DB_NAME="auto_inventory"
+DB_USER="deploy"
+DB_PASSWORD="deploy_password_2026"
 
-# Формируем сообщение
-MESSAGE="📊 Daily Report - Auto Inventory%0A%0A"
-MESSAGE="${MESSAGE}🚗 Total cars: $TOTAL_CARS%0A"
-MESSAGE="${MESSAGE}🏷️ Total brands: $TOTAL_BRANDS%0A"
-MESSAGE="${MESSAGE}🏭 Total warehouses: $TOTAL_WAREHOUSES%0A"
-MESSAGE="${MESSAGE}📦 Total units: $TOTAL_QUANTITY%0A"
-MESSAGE="${MESSAGE}✅ Service status: Running%0A"
-MESSAGE="${MESSAGE}📅 Date: $(date '+%Y-%m-%d %H:%M:%S')"
+export PGPASSWORD="$DB_PASSWORD"
+
+# Получаем данные из PostgreSQL
+TOTAL_CARS=$(psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -t -c "SELECT COUNT(*) FROM cars;" 2>/dev/null | xargs || echo "0")
+TOTAL_BRANDS=$(psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -t -c "SELECT COUNT(*) FROM car_brands;" 2>/dev/null | xargs || echo "0")
+TOTAL_WAREHOUSES=$(psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -t -c "SELECT COUNT(*) FROM warehouses;" 2>/dev/null | xargs || echo "0")
+TOTAL_QUANTITY=$(psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -t -c "SELECT COALESCE(SUM(quantity), 0) FROM cars;" 2>/dev/null | xargs || echo "0")
+TOTAL_VALUE=$(psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -t -c "SELECT COALESCE(SUM(price * quantity), 0) FROM cars;" 2>/dev/null | xargs || echo "0")
+
+# Формируем красивое сообщение
+MESSAGE="📊 <b>ЕЖЕДНЕВНЫЙ ОТЧЕТ</b>%0A%0A"
+MESSAGE="${MESSAGE}┌─────────────────────────────────┐%0A"
+MESSAGE="${MESSAGE}│ 🚗 <b>Автомобилей:</b> $TOTAL_CARS%0A"
+MESSAGE="${MESSAGE}│ 🏷️ <b>Марок:</b> $TOTAL_BRANDS%0A"
+MESSAGE="${MESSAGE}│ 🏭 <b>Складов:</b> $TOTAL_WAREHOUSES%0A"
+MESSAGE="${MESSAGE}│ 📦 <b>Единиц:</b> $TOTAL_QUANTITY%0A"
+MESSAGE="${MESSAGE}│ 💰 <b>Стоимость:</b> ${TOTAL_VALUE} ₽%0A"
+MESSAGE="${MESSAGE}│ ✅ <b>Статус:</b> Работает%0A"
+MESSAGE="${MESSAGE}│ 📅 <b>Дата:</b> $(date '+%d.%m.%Y %H:%M:%S')%0A"
+MESSAGE="${MESSAGE}└─────────────────────────────────┘"
 
 # Отправляем
 if [ -n "$TELEGRAM_BOT_TOKEN" ]; then
