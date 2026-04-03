@@ -1,0 +1,45 @@
+services:
+  postgres-dev:
+    image: postgres:13
+    container_name: auto_inventory_postgres_dev
+    environment:
+      POSTGRES_DB: auto_inventory_dev
+      POSTGRES_USER: deploy
+      POSTGRES_PASSWORD: deploy_password_2026
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - dev_network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U deploy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auto_inventory_app_dev
+    ports:
+      - "5001:5000"
+    environment:
+      - DATABASE_URL=postgresql://deploy:deploy_password_2026@postgres-dev:5432/auto_inventory_dev
+      - SECRET_KEY=dev-secret-key-2026
+      - FLASK_ENV=development
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+    networks:
+      - dev_network
+    restart: always
+
+networks:
+  dev_network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:
