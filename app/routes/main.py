@@ -39,3 +39,10 @@ def profile():
 @login_required
 def statistics():
     return render_template("statistics.html", user=current_user)
+
+@bp.route("/api/me")
+@login_required
+def api_me():
+    """Get current user info"""
+    from flask import jsonify
+    return jsonify(current_user.to_dict())
