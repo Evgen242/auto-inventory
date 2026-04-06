@@ -1,6 +1,5 @@
 """Фикстуры для pytest"""
 import pytest
-import tempfile
 import os
 import sys
 

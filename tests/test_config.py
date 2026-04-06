@@ -1,6 +1,4 @@
 """Тестовая конфигурация"""
-import tempfile
-import os
 
 
 class TestConfig:

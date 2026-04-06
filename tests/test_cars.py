@@ -1,5 +1,4 @@
 """Тесты для автомобилей"""
-import pytest
 from app import db
 from app.models.car import Car, CarBrand
 from app.models.warehouse import Warehouse

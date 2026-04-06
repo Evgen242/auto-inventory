@@ -1,5 +1,4 @@
 """Unit-тесты для маршрутов"""
-import pytest
 from app import db
 from app.models.user import User
 

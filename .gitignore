@@ -48,3 +48,11 @@ session.txt
 *.cookies
 *.session
 routes/requirements.txt
+.env
+.env.docker
+instance/
+__pycache__/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/

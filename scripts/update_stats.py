@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import requests
-import json
-import os
 from datetime import datetime
 
 # Получаем статистику через localhost
