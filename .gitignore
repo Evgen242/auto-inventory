@@ -57,3 +57,17 @@ __pycache__/
 coverage.xml
 htmlcov/
 .env.docker
+
+# Backup files
+*.backup
+*.bak
+*.template.sh
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
