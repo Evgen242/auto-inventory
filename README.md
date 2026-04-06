@@ -1,7 +1,7 @@
 # 🚗 Auto Inventory System
 
-[![Deploy to Production](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml)
 [![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml)
+[![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/test.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/test.yml)
 
 **Система учета автомобилей на складах** с авторизацией, поиском, фильтрацией и аналитикой.
 
@@ -12,45 +12,9 @@
 | Роль | Логин | Пароль | Права |
 |------|-------|--------|-------|
 | 👁️ **Демо-пользователь** | `demo` | `demo123` | Только просмотр |
+| 👑 **Администратор** | `admin` | `admin123` | Полный доступ |
 
 🔗 **Демо версия:** https://autolot25.ddns.net:8086
-
----
-
-## 👑 Важно о правах администратора
-
-**Первый зарегистрированный пользователь автоматически получает права администратора!**
-
-Это сделано для удобства первоначальной настройки системы. Все последующие пользователи регистрируются с обычными правами.
-
-### Как стать администратором:
-1. Зарегистрируйтесь первым в системе
-2. Вы автоматически получите все права администратора
-3. Сможете управлять марками, складами и другими пользователями
-
-### Проверка прав:
-- Администратор видит пункт "Админ-панель" в меню
-- Администратор может удалять любые автомобили
-- Администратор управляет справочниками (марки, склады)
-
-> 💡 **Совет:** Если вы первый пользователь системы, зарегистрируйтесь сразу после установки, чтобы получить полный доступ.
-
----
-
-## 👤 Система ролей и прав
-
-| Действие | Демо | Обычный пользователь | Администратор |
-|----------|:----:|:-------------------:|:-------------:|
-| **Просмотр автомобилей** | ✅ | ✅ | ✅ |
-| **Поиск и фильтрация** | ✅ | ✅ | ✅ |
-| **Просмотр статистики** | ✅ | ✅ | ✅ |
-| **Добавление автомобилей** | ❌ | ✅ | ✅ |
-| **Удаление СВОИХ автомобилей** | ❌ | ✅ | ✅ |
-| **Удаление ЧУЖИХ автомобилей** | ❌ | ❌ | ✅ |
-| **Редактирование автомобилей** | ❌ | ❌ | ✅ |
-| **Управление марками** | ❌ | ❌ | ✅ |
-| **Управление складами** | ❌ | ❌ | ✅ |
-| **Админ-панель** | ❌ | ❌ | ✅ |
 
 ---
 
@@ -58,12 +22,13 @@
 
 ### 🔐 Авторизация
 - Регистрация новых пользователей
-- Вход с сохранением сессии
+- Постоянные сессии (1 час бездействия)
+- "Запомнить меня" (7 дней)
 - Разграничение прав (демо / пользователь / администратор)
 
 ### 🏭 Управление складами
 - Создание складов с указанием местоположения
-- Отслеживание загрузки складов (в %)
+- Отслеживание загрузки складов в реальном времени
 
 ### 🏷️ Управление марками
 - Добавление марок автомобилей
@@ -85,8 +50,8 @@
 ### 📊 Статистика и аналитика
 - Дашборд с ключевыми метриками
 - Распределение автомобилей по маркам
-- Загрузка складов в реальном времени
-- Топ 5 самых дорогих автомобилей
+- Загрузка складов
+- Топ самых дорогих автомобилей
 - Распределение по годам выпуска
 
 ---
@@ -100,15 +65,39 @@
 | **Database** | PostgreSQL |
 | **Server** | Gunicorn, Nginx |
 | **Security** | Flask-Login, Werkzeug, SSL |
-| **DevOps** | GitHub Actions CI/CD |
+| **DevOps** | Docker, GitHub Actions CI/CD |
 
 ---
 
 ## 🚀 Быстрый старт
 
-### Локальная установка
+### Требования
+- Docker и Docker Compose (рекомендуется)
+- Или Python 3.10+ с PostgreSQL
+
+### Вариант 1: Docker (рекомендуется)
 
 ```bash
+# Клонирование репозитория
+git clone https://github.com/Evgen242/auto-inventory.git
+cd auto-inventory
+
+# Копирование конфигурации
+cp .env.docker.example .env.docker
+
+# Запуск
+docker compose -f docker-compose-dev.yml up -d
+
+# Проверка статуса
+docker compose -f docker-compose-dev.yml ps
+
+# Просмотр логов
+docker compose -f docker-compose-dev.yml logs -f
+
+# Остановка
+docker compose -f docker-compose-dev.yml down
+Вариант 2: Локальная установка
+bash
 # Клонирование репозитория
 git clone https://github.com/Evgen242/auto-inventory.git
 cd auto-inventory
@@ -127,48 +116,58 @@ cp .env.example .env
 
 # Запуск приложения
 python run.py
-Docker поддержка
+🐳 Docker структура
+yaml
+services:
+  postgres-dev:    # PostgreSQL 13 на порту 5433
+  app-dev:         # Flask приложение на порту 5001 (наружу 8087)
+Docker команды
 bash
-# Запуск в Docker
-docker compose -f docker-compose-dev.yml up -d
+# Запуск с пересборкой
+docker compose -f docker-compose-dev.yml up -d --build
 
 # Просмотр статуса
 docker compose -f docker-compose-dev.yml ps
 
-# Просмотр логов
-docker compose -f docker-compose-dev.yml logs -f
+# Логи приложения
+docker compose -f docker-compose-dev.yml logs -f app-dev
 
-# Остановка
-docker compose -f docker-compose-dev.yml down
-👥 Управление пользователями в Docker
+# Вход в контейнер
+docker exec -it auto_inventory_app_dev bash
+
+# Остановка с удалением томов
+docker compose -f docker-compose-dev.yml down -v
+👥 Управление пользователями
+Создание администратора в Docker
 bash
-# Добавление нового пользователя
 docker exec auto_inventory_app_dev python3 -c "
 from app import create_app, db
 from app.models.user import User
 
 app = create_app()
 with app.app_context():
-    user = User(username='newuser', email='new@example.com', is_admin=False)
+    admin = User(username='admin', email='admin@example.com', is_admin=True)
+    admin.set_password('admin123')
+    db.session.add(admin)
+    db.session.commit()
+    print('✅ Admin created: admin/admin123')
+"
+Создание обычного пользователя
+bash
+docker exec auto_inventory_app_dev python3 -c "
+from app import create_app, db
+from app.models.user import User
+
+app = create_app()
+with app.app_context():
+    user = User(username='username', email='user@example.com')
     user.set_password('password123')
     db.session.add(user)
     db.session.commit()
     print('✅ User created')
 "
-
-# Просмотр всех пользователей
-docker exec auto_inventory_app_dev python3 -c "
-from app import create_app, db
-from app.models.user import User
-
-app = create_app()
-with app.app_context():
-    for user in User.query.all():
-        admin_status = '👑' if user.is_admin else '👤'
-        print(f'{admin_status} {user.username} (admin: {user.is_admin})'
-"
-
-# Назначение администратора
+Назначение администратором
+bash
 docker exec auto_inventory_app_dev python3 -c "
 from app import create_app, db
 from app.models.user import User
@@ -176,10 +175,9 @@ from app.models.user import User
 app = create_app()
 with app.app_context():
     user = User.query.filter_by(username='username').first()
-    if user:
-        user.is_admin = True
-        db.session.commit()
-        print(f'✅ {user.username} теперь администратор')
+    user.is_admin = True
+    db.session.commit()
+    print(f'✅ {user.username} теперь администратор')
 "
 📡 API Endpoints
 Метод	Endpoint	Описание	Доступ
@@ -191,11 +189,75 @@ POST	/api/brands	Добавить марку	✅ Только админ
 GET	/api/warehouses	Список складов	✅ Авторизованные
 POST	/api/warehouses	Добавить склад	✅ Только админ
 GET	/api/stats	Статистика	✅ Авторизованные
+GET	/api/me	Информация о текущем пользователе	✅ Авторизованные
+Пример использования API
+bash
+# Логин
+curl -c cookies.txt -X POST http://localhost:5000/auth/login \
+  -d "username=admin" -d "password=admin123"
+
+# Получение списка автомобилей
+curl -b cookies.txt http://localhost:5000/api/cars
+
+# Получение статистики
+curl -b cookies.txt http://localhost:5000/api/stats
+
+# Получение информации о пользователе
+curl -b cookies.txt http://localhost:5000/api/me
 🔧 CI/CD (GitHub Actions)
 Workflow	Триггер	Действие
-deploy.yml	Push в main	Автоматический деплой на сервер
-check.yml	Push в main	Проверка качества кода (flake8)
-backup.yml	Каждый день в 2:00	Резервное копирование БД
+check.yml	Push в main	Проверка качества кода (flake8, black)
+test.yml	Push в main	Линтинг и проверка секретов
+📁 Структура проекта
+text
+auto-inventory/
+├── app/                    # Основное приложение
+│   ├── models/            # Модели данных
+│   ├── routes/            # Маршруты API
+│   └── templates/         # HTML шаблоны
+├── tests/                 # Тесты
+├── deploy/                # Скрипты деплоя
+├── Dockerfile             # Docker образ
+├── docker-compose-dev.yml # Docker Compose
+├── requirements.txt       # Python зависимости
+├── config.py              # Конфигурация
+├── Makefile              # Команды для разработки
+└── README.md             # Документация
+🛠 Команды для разработки
+bash
+# Запуск всех тестов
+make test-all
+
+# Только unit тесты
+make test-unit
+
+# Тесты с покрытием
+make coverage
+
+# Очистка кэша
+make clean
+
+# Проверка форматирования
+make pre-commit
+🐛 Устранение неполадок
+Проблема: "Please check your username and password"
+Решение: Создайте пользователя (см. раздел "Управление пользователями")
+
+Проблема: Сессия сбрасывается при обновлении
+Решение: Проверьте, что SECRET_KEY одинаковый для всех экземпляров
+
+Проблема: Docker не запускается
+Решение: Очистите и пересоберите
+
+bash
+docker compose -f docker-compose-dev.yml down -v
+docker compose -f docker-compose-dev.yml up -d --build
+Проблема: Нет места на диске
+Решение: Очистите Docker
+
+bash
+docker system prune -a -f --volumes
+sudo journalctl --vacuum-size=50M
 📝 Лицензия
 MIT License
 
@@ -205,28 +267,6 @@ Evgenii Fralou (Evgen242)
 GitHub: @Evgen242
 
 ⭐️ Если проект вам полезен, поставьте звезду на GitHub!
-# CI/CD Test Fri Apr  3 12:23:15 PM UTC 2026
-
-## 📊 Тесты и покрытие
-
-[![Tests](https://github.com/YOUR_USERNAME/auto-inventory/actions/workflows/test.yml/badge.svg)](https://github.com/YOUR_USERNAME/auto-inventory/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/YOUR_USERNAME/auto-inventory/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/auto-inventory)
-[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/)
-
-### Запуск тестов локально
-
-```bash
-# Все тесты
-make test-all
-
-# Только unit тесты
-make test-unit
-
-# С покрытием
-make coverage
-Статус тестов
-✅ 20 тестов проходят успешно
-
-📈 Покрытие кода: 53%
-
-🚀 CI/CD настроен
+https://img.shields.io/github/stars/Evgen242/auto-inventory
+https://img.shields.io/github/forks/Evgen242/auto-inventory
+https://img.shields.io/github/issues/Evgen242/auto-inventory
