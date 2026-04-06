@@ -2,8 +2,8 @@ name: Update README with Latest Stats
 
 on:
   schedule:
-    - cron: '0 */12 * * *'  # Каждые 12 часов
-  workflow_dispatch:  # Ручной запуск
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths:
@@ -13,54 +13,18 @@ on:
 jobs:
   update-stats:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-
+      
       - name: Install dependencies
-        run: |
-          pip install requests
-
-      - name: Fetch statistics from API
-        run: |
-          python scripts/update_stats.py
+        run: pip install requests
+      
+      - name: Fetch statistics
+        run: python scripts/update_stats.py
         env:
           PYTHONUNBUFFERED: 1
-
-      - name: Update README with stats
-        run: |
-          # Создаем README с актуальной статистикой
-          cat > README.md << 'EOF'
-# 🚗 Auto Inventory System
-
-[![Deploy to Production](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/deploy.yml)
-[![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml)
-[![Update Stats](https://github.com/Evgen242/auto-inventory/actions/workflows/update-readme.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/update-readme.yml)
-
-Система учета автомобилей на складах с авторизацией, поиском и аналитикой.
-
-## ✨ Возможности
-
-- 🔐 **Авторизация** - регистрация и вход пользователей
-- 🏭 **Управление складами** - создание и отслеживание складов
-- 🏷️ **Управление марками** - добавление и удаление марок авто
-- 🚙 **Учет автомобилей** - добавление авто с указанием марки, склада, цены
-- 🔍 **Поиск и фильтрация** - поиск по модели, VIN, марке
-- 📊 **Статистика** - дашборд с графиками и аналитикой
-- 📱 **Адаптивный дизайн** - Bootstrap 5
-
-## 🛠 Технологии
-
-| Компонент | Технология |
-|-----------|------------|
-| Backend | Python 3.10, Flask, SQLAlchemy |
-| Frontend | HTML5, CSS3, Bootstrap 5, JavaScript |
-| Database | PostgreSQL |
-| Server | Gunicorn, Nginx |
-| Security | Flask-Login, Werkzeug, SSL |
-| DevOps | GitHub Actions CI/CD |
