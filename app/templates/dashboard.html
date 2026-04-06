@@ -28,17 +28,17 @@ async function loadStatistics() {
     try {
         console.log('Загрузка статистики...');
         const response = await fetch('/stats/api/dashboard');
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
             throw new Error(data.error);
         }
-        
+
         // KPI карточки
         const kpiHtml = `
             <div class="row mb-4">
@@ -100,7 +100,7 @@ async function loadStatistics() {
                 </div>
             </div>
         `;
-        
+
         // Таблица по маркам
         let brandsHtml = '';
         if (data.by_brand && data.by_brand.length > 0) {
@@ -137,7 +137,7 @@ async function loadStatistics() {
                 </div>
             `;
         }
-        
+
         // Таблица по складам
         let warehousesHtml = '';
         if (data.by_warehouse && data.by_warehouse.length > 0) {
@@ -168,7 +168,7 @@ async function loadStatistics() {
                                             <td>${Math.round(w.value || 0).toLocaleString()} ₽</td>
                                             <td>
                                                 <div class="progress" style="height: 20px;">
-                                                    <div class="progress-bar ${(w.capacity_used || 0) > 80 ? 'bg-danger' : (w.capacity_used || 0) > 60 ? 'bg-warning' : 'bg-success'}" 
+                                                    <div class="progress-bar ${(w.capacity_used || 0) > 80 ? 'bg-danger' : (w.capacity_used || 0) > 60 ? 'bg-warning' : 'bg-success'}"
                                                          style="width: ${Math.min(w.capacity_used || 0, 100)}%">
                                                         ${Math.round(w.capacity_used || 0)}%
                                                     </div>
@@ -183,7 +183,7 @@ async function loadStatistics() {
                 </div>
             `;
         }
-        
+
         // Топ автомобилей
         let topHtml = '';
         if (data.top_cars) {
@@ -242,7 +242,7 @@ async function loadStatistics() {
                 </div>
             `;
         }
-        
+
         // Распределение по годам
         let yearsHtml = '';
         if (data.year_distribution && data.year_distribution.length > 0) {
@@ -287,7 +287,7 @@ async function loadStatistics() {
                 </div>
             `;
         }
-        
+
         // Кнопка обновления
         const refreshButton = `
             <div class="text-end mb-3">
@@ -296,12 +296,12 @@ async function loadStatistics() {
                 </button>
             </div>
         `;
-        
+
         // Собираем всё вместе
         document.getElementById('stats-content').innerHTML = refreshButton + kpiHtml + brandsHtml + warehousesHtml + topHtml + yearsHtml;
         document.getElementById('loading').style.display = 'none';
         document.getElementById('stats-content').style.display = 'block';
-        
+
     } catch (error) {
         console.error('Error loading statistics:', error);
         document.getElementById('loading').innerHTML = `

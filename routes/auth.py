@@ -6,45 +6,43 @@ from app.models.user import User
 import os
 import requests
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+bp = Blueprint("auth", __name__, url_prefix="/auth")
+
 
 def send_telegram_notification(message):
     """Отправка уведомления в Telegram"""
     try:
-        bot_token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
-        chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
-        
-        if bot_token and chat_id and bot_token != 'your_bot_token_here':
+        bot_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+        chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+
+        if bot_token and chat_id and bot_token != "your_bot_token_here":
             url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-            data = {
-                'chat_id': chat_id,
-                'text': message,
-                'parse_mode': 'HTML'
-            }
+            data = {"chat_id": chat_id, "text": message, "parse_mode": "HTML"}
             requests.post(url, data=data, timeout=5)
             print(f"Telegram notification sent: {message[:50]}...")
     except Exception as e:
         print(f"Telegram notification error: {e}")
 
-@bp.route('/login', methods=['GET', 'POST'])
+
+@bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for("main.index"))
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        remember = True if request.form.get('remember') else False
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        remember = True if request.form.get("remember") else False
 
         user = User.query.filter_by(username=username).first()
 
         if not user or not user.check_password(password):
-            flash('Пожалуйста, проверьте имя пользователя и пароль', 'danger')
-            return redirect(url_for('auth.login'))
+            flash("Пожалуйста, проверьте имя пользователя и пароль", "danger")
+            return redirect(url_for("auth.login"))
 
         if not user.is_active:
-            flash('Аккаунт деактивирован', 'danger')
-            return redirect(url_for('auth.login'))
+            flash("Аккаунт деактивирован", "danger")
+            return redirect(url_for("auth.login"))
 
         login_user(user, remember=remember)
         user.last_login = datetime.utcnow()
@@ -59,33 +57,34 @@ def login():
                 f"📅 {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}"
             )
 
-        flash(f'Добро пожаловать, {user.username}!', 'success')
-        return redirect(url_for('main.index'))
+        flash(f"Добро пожаловать, {user.username}!", "success")
+        return redirect(url_for("main.index"))
 
-    return render_template('login.html')
+    return render_template("login.html")
 
-@bp.route('/register', methods=['GET', 'POST'])
+
+@bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for("main.index"))
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
+    if request.method == "POST":
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
 
         if password != confirm_password:
-            flash('Пароли не совпадают', 'danger')
-            return redirect(url_for('auth.register'))
+            flash("Пароли не совпадают", "danger")
+            return redirect(url_for("auth.register"))
 
         if User.query.filter_by(username=username).first():
-            flash('Имя пользователя уже занято', 'danger')
-            return redirect(url_for('auth.register'))
+            flash("Имя пользователя уже занято", "danger")
+            return redirect(url_for("auth.register"))
 
         if User.query.filter_by(email=email).first():
-            flash('Email уже зарегистрирован', 'danger')
-            return redirect(url_for('auth.register'))
+            flash("Email уже зарегистрирован", "danger")
+            return redirect(url_for("auth.register"))
 
         user = User(username=username, email=email)
         user.set_password(password)
@@ -110,28 +109,31 @@ def register():
         )
         send_telegram_notification(message)
 
-        flash('Регистрация успешна! Теперь вы можете войти', 'success')
-        return redirect(url_for('auth.login'))
+        flash("Регистрация успешна! Теперь вы можете войти", "success")
+        return redirect(url_for("auth.login"))
 
-    return render_template('register.html')
+    return render_template("register.html")
 
-@bp.route('/logout')
+
+@bp.route("/logout")
 @login_required
 def logout():
     logout_user()
-    flash('Вы вышли из системы', 'info')
-    return redirect(url_for('auth.login'))
+    flash("Вы вышли из системы", "info")
+    return redirect(url_for("auth.login"))
 
-@bp.route('/api/me')
+
+@bp.route("/api/me")
 @login_required
 def api_me():
     return jsonify(current_user.to_dict())
 
-@bp.route('/api/users')
+
+@bp.route("/api/users")
 @login_required
 def api_users():
     if not current_user.is_admin:
-        return jsonify({'error': 'Доступ запрещен'}), 403
+        return jsonify({"error": "Доступ запрещен"}), 403
 
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])

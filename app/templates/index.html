@@ -185,7 +185,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <!-- Пагинация -->
                 <nav>
                     <ul class="pagination justify-content-center" id="pagination"></ul>
@@ -296,7 +296,7 @@ function buildQueryParams() {
     const priceTo = document.getElementById('priceTo').value;
     const sortBy = document.getElementById('sortBy').value;
     const sortOrder = document.getElementById('sortOrder').value;
-    
+
     if (search) params.append('search', search);
     if (brandFilter && brandFilter !== 'all') params.append('brand_id', brandFilter);
     if (warehouseFilter && warehouseFilter !== 'all') params.append('warehouse_id', warehouseFilter);
@@ -308,7 +308,7 @@ function buildQueryParams() {
     if (sortOrder) params.append('sort_order', sortOrder);
     params.append('page', currentPage);
     params.append('per_page', 20);
-    
+
     return params;
 }
 
@@ -316,16 +316,16 @@ async function loadCars() {
     const params = buildQueryParams();
     const response = await fetch(`/api/cars?${params}`);
     const data = await response.json();
-    
+
     totalPages = data.pages;
     const tbody = document.getElementById('carsList');
-    
+
     if (data.items.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" class="text-center">Нет автомобилей</td></tr>';
         document.getElementById('pagination').innerHTML = '';
         return;
     }
-    
+
     tbody.innerHTML = data.items.map(car => `
         <tr>
             <td>${car.brand || '-'}</td>
@@ -342,7 +342,7 @@ async function loadCars() {
             </td>
         </tr>
     `).join('');
-    
+
     renderPagination();
 }
 
@@ -352,12 +352,12 @@ function renderPagination() {
         pagination.innerHTML = '';
         return;
     }
-    
+
     let html = '';
     if (currentPage > 1) {
         html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage - 1})">«</a></li>`;
     }
-    
+
     for (let i = 1; i <= totalPages; i++) {
         if (i === currentPage) {
             html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
@@ -367,11 +367,11 @@ function renderPagination() {
             html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
         }
     }
-    
+
     if (currentPage < totalPages) {
         html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage + 1})">»</a></li>`;
     }
-    
+
     pagination.innerHTML = html;
 }
 
@@ -412,11 +412,11 @@ async function loadBrands() {
     const brands = await response.json();
     const select = document.getElementById('brand_id');
     const filterSelect = document.getElementById('brandFilter');
-    
-    select.innerHTML = '<option value="">Выберите марку</option>' + 
+
+    select.innerHTML = '<option value="">Выберите марку</option>' +
         brands.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
-    
-    filterSelect.innerHTML = '<option value="all">Все марки</option>' + 
+
+    filterSelect.innerHTML = '<option value="all">Все марки</option>' +
         brands.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
 }
 
@@ -425,11 +425,11 @@ async function loadWarehouses() {
     const warehouses = await response.json();
     const select = document.getElementById('warehouse_id');
     const filterSelect = document.getElementById('warehouseFilter');
-    
-    select.innerHTML = '<option value="">Выберите склад</option>' + 
+
+    select.innerHTML = '<option value="">Выберите склад</option>' +
         warehouses.map(w => `<option value="${w.id}">${w.name} (${w.location})</option>`).join('');
-    
-    filterSelect.innerHTML = '<option value="all">Все склады</option>' + 
+
+    filterSelect.innerHTML = '<option value="all">Все склады</option>' +
         warehouses.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
 }
 

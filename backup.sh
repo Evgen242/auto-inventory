@@ -11,7 +11,7 @@ if [ -f "$DB_FILE" ]; then
     cp $DB_FILE $BACKUP_DIR/inventory_$DATE.db
     gzip -f $BACKUP_DIR/inventory_$DATE.db
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Backup created: inventory_$DATE.db.gz" >> $BACKUP_DIR/backup.log
-    
+
     # Удаляем старые бэкапы (старше 30 дней)
     find $BACKUP_DIR -name "inventory_*.db.gz" -mtime +30 -delete
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Old backups cleaned" >> $BACKUP_DIR/backup.log

@@ -206,3 +206,27 @@ GitHub: @Evgen242
 
 ⭐️ Если проект вам полезен, поставьте звезду на GitHub!
 # CI/CD Test Fri Apr  3 12:23:15 PM UTC 2026
+
+## 📊 Тесты и покрытие
+
+[![Tests](https://github.com/YOUR_USERNAME/auto-inventory/actions/workflows/test.yml/badge.svg)](https://github.com/YOUR_USERNAME/auto-inventory/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/YOUR_USERNAME/auto-inventory/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/auto-inventory)
+[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/)
+
+### Запуск тестов локально
+
+```bash
+# Все тесты
+make test-all
+
+# Только unit тесты
+make test-unit
+
+# С покрытием
+make coverage
+Статус тестов
+✅ 20 тестов проходят успешно
+
+📈 Покрытие кода: 53%
+
+🚀 CI/CD настроен

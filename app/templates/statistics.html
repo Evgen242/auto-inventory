@@ -22,14 +22,14 @@ async function loadStatistics() {
     try {
         console.log('Загрузка статистики...');
         const response = await fetch('/stats/api/dashboard');
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const text = await response.text();
         console.log('Получен текст:', text.substring(0, 200));
-        
+
         let data;
         try {
             data = JSON.parse(text);
@@ -37,16 +37,16 @@ async function loadStatistics() {
             console.error('Ошибка парсинга JSON:', e);
             throw new Error('Неверный формат данных от сервера');
         }
-        
+
         if (data.error) {
             throw new Error(data.error);
         }
-        
+
         // Проверяем наличие данных
         if (!data.overview) {
             throw new Error('Нет данных для отображения');
         }
-        
+
         // KPI карточки
         const kpiHtml = `
             <div class="row mb-4">
@@ -108,7 +108,7 @@ async function loadStatistics() {
                 </div>
             </div>
         `;
-        
+
         // Таблица по маркам
         let brandsHtml = '';
         if (data.by_brand && data.by_brand.length > 0) {
@@ -137,7 +137,7 @@ async function loadStatistics() {
                 </div>
             `;
         }
-        
+
         // Таблица по складам
         let warehousesHtml = '';
         if (data.by_warehouse && data.by_warehouse.length > 0) {
@@ -174,7 +174,7 @@ async function loadStatistics() {
                 </div>
             `;
         }
-        
+
         // Топ автомобилей
         let topHtml = '';
         if (data.top_cars) {
@@ -217,7 +217,7 @@ async function loadStatistics() {
                 </div>
             `;
         }
-        
+
         // Распределение по годам
         let yearsHtml = '';
         if (data.year_distribution && data.year_distribution.length > 0) {
@@ -245,12 +245,12 @@ async function loadStatistics() {
                 </div>
             `;
         }
-        
+
         // Собираем всё вместе
         document.getElementById('stats-content').innerHTML = kpiHtml + brandsHtml + warehousesHtml + topHtml + yearsHtml;
         document.getElementById('loading').style.display = 'none';
         document.getElementById('stats-content').style.display = 'block';
-        
+
     } catch (error) {
         console.error('Error loading statistics:', error);
         document.getElementById('loading').innerHTML = `

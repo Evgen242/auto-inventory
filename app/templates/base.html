@@ -67,8 +67,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">
-                            <i class="bi bi-speedometer2"></i> Дашборд
+                        <a class="nav-link" href="{{ url_for('statistics.dashboard') }}">
+                            <i class="bi bi-speedometer2"></i> Статистика
                         </a>
                     </li>
                 </ul>
@@ -97,7 +97,7 @@
             </div>
         </div>
     </nav>
-    
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-2 p-0">
@@ -105,9 +105,6 @@
                     <div class="list-group">
                         <a href="{{ url_for('main.index') }}" class="list-group-item list-group-item-action">
 
-                            <i class="bi bi-graph-up"></i> Статистика
-
-                        </a>
                             <i class="bi bi-speedometer2"></i> Обзор
                         </a>
                         <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#carModal">
@@ -134,13 +131,13 @@
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
-                    
+
                     {% block content %}{% endblock %}
                 </div>
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>

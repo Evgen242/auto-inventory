@@ -26,10 +26,10 @@ services:
     container_name: auto_inventory_app_dev
     ports:
       - "5001:5000"
+    env_file:
+      - .env.docker
     environment:
       - DATABASE_URL=postgresql://deploy:deploy_password_2026@postgres-dev:5432/auto_inventory_dev
-      - SECRET_KEY=dev-secret-key-2026
-      - FLASK_ENV=development
     depends_on:
       postgres-dev:
         condition: service_healthy

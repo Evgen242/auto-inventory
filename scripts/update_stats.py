@@ -6,9 +6,9 @@ from datetime import datetime
 
 # Получаем статистику через localhost
 try:
-    response = requests.get('http://localhost:5000/api/stats', timeout=10)
+    response = requests.get("http://localhost:5000/api/stats", timeout=10)
     data = response.json()
-    
+
     # Формируем блок статистики
     stats_block = f"""## 📊 Статистика системы ({datetime.now().strftime('%d.%m.%Y')})
 
@@ -20,15 +20,15 @@ try:
 
 ### Распределение по складам:
 """
-    for w in data.get('cars_by_warehouse', []):
+    for w in data.get("cars_by_warehouse", []):
         stats_block += f"- **{w['warehouse']}:** {w['quantity']} ед. ({w['count']} моделей)\n"
-    
+
     print(stats_block)
-    
+
     # Сохраняем в файл
-    with open('/tmp/stats.md', 'w', encoding='utf-8') as f:
+    with open("/tmp/stats.md", "w", encoding="utf-8") as f:
         f.write(stats_block)
-    
+
     print("✅ Stats saved")
 except Exception as e:
     print(f"❌ Error: {e}")

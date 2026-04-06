@@ -90,7 +90,7 @@
                 Логин: <code>demo</code> / Пароль: <code>demo123</code><br>
                 <small class="text-muted">Демо-пользователь может только просматривать данные</small>
             </div>
-            
+
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -101,7 +101,7 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-            
+
             <form method="POST">
                 <div class="form-group">
                     <label for="username">Имя пользователя</label>

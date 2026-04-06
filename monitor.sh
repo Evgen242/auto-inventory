@@ -22,7 +22,7 @@ send_telegram() {
 # Проверка приложения
 check_app() {
     local response=$(curl -s -o /dev/null -w "%{http_code}" $APP_URL 2>/dev/null)
-    
+
     if [ "$response" == "200" ]; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✅ Application is healthy" >> $LOG_FILE
     else
