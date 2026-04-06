@@ -1,7 +1,7 @@
 # 🚗 Auto Inventory System
 
 [![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/check.yml)
-[![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/test.yml/badge.svg)](https://github.com/Evgen242/auto-inventory/actions/workflows/test.yml)
+[![Code Quality](https://github.com/Evgen242/auto-inventory/actions/workflows/test.yml/badge.svg)](https://github.comEvgen242/auto-inventory/actions/workflows/test.yml)
 
 **Система учета автомобилей на складах** с авторизацией, поиском, фильтрацией и аналитикой.
 
@@ -12,9 +12,28 @@
 | Роль | Логин | Пароль | Права |
 |------|-------|--------|-------|
 | 👁️ **Демо-пользователь** | `demo` | `demo123` | Только просмотр |
-| 👑 **Администратор** | `admin` | `admin123` | Полный доступ |
 
 🔗 **Демо версия:** https://autolot25.ddns.net:8086
+
+---
+
+## 👑 Важно о правах администратора
+
+**Первый зарегистрированный пользователь автоматически получает права администратора!**
+
+Это сделано для удобства первоначальной настройки системы. Все последующие пользователи регистрируются с обычными правами.
+
+### Как стать администратором:
+1. Зарегистрируйтесь первым в системе
+2. Вы автоматически получите все права администратора
+3. Сможете управлять марками, складами и другими пользователями
+
+### Проверка прав:
+- Администратор видит пункт "Админ-панель" в меню
+- Администратор может удалять любые автомобили
+- Администратор управляет справочниками (марки, склады)
+
+> 💡 **Совет:** Если вы первый пользователь системы, зарегистрируйтесь сразу после установки, чтобы получить полный доступ.
 
 ---
 
@@ -25,6 +44,21 @@
 - Постоянные сессии (1 час бездействия)
 - "Запомнить меня" (7 дней)
 - Разграничение прав (демо / пользователь / администратор)
+
+### 👥 Система ролей и прав
+
+| Действие | Демо | Обычный пользователь | Администратор |
+|----------|:----:|:-------------------:|:-------------:|
+| **Просмотр автомобилей** | ✅ | ✅ | ✅ |
+| **Поиск и фильтрация** | ✅ | ✅ | ✅ |
+| **Просмотр статистики** | ✅ | ✅ | ✅ |
+| **Добавление автомобилей** | ❌ | ✅ | ✅ |
+| **Удаление СВОИХ автомобилей** | ❌ | ✅ | ✅ |
+| **Удаление ЧУЖИХ автомобилей** | ❌ | ❌ | ✅ |
+| **Редактирование автомобилей** | ❌ | ❌ | ✅ |
+| **Управление марками** | ❌ | ❌ | ✅ |
+| **Управление складами** | ❌ | ❌ | ✅ |
+| **Админ-панель** | ❌ | ❌ | ✅ |
 
 ### 🏭 Управление складами
 - Создание складов с указанием местоположения
@@ -138,21 +172,10 @@ docker exec -it auto_inventory_app_dev bash
 # Остановка с удалением томов
 docker compose -f docker-compose-dev.yml down -v
 👥 Управление пользователями
-Создание администратора в Docker
-bash
-docker exec auto_inventory_app_dev python3 -c "
-from app import create_app, db
-from app.models.user import User
+Регистрация первого пользователя (становится администратором)
+Просто откройте приложение в браузере и нажмите "Зарегистрироваться". Первый зарегистрированный пользователь автоматически получит права администратора.
 
-app = create_app()
-with app.app_context():
-    admin = User(username='admin', email='admin@example.com', is_admin=True)
-    admin.set_password('admin123')
-    db.session.add(admin)
-    db.session.commit()
-    print('✅ Admin created: admin/admin123')
-"
-Создание обычного пользователя
+Создание пользователя через командную строку (опционально)
 bash
 docker exec auto_inventory_app_dev python3 -c "
 from app import create_app, db
@@ -166,7 +189,7 @@ with app.app_context():
     db.session.commit()
     print('✅ User created')
 "
-Назначение администратором
+Назначение администратором существующего пользователя
 bash
 docker exec auto_inventory_app_dev python3 -c "
 from app import create_app, db
@@ -194,7 +217,7 @@ GET	/api/me	Информация о текущем пользователе	✅ 
 bash
 # Логин
 curl -c cookies.txt -X POST http://localhost:5000/auth/login \
-  -d "username=admin" -d "password=admin123"
+  -d "username=username" -d "password=password123"
 
 # Получение списка автомобилей
 curl -b cookies.txt http://localhost:5000/api/cars
@@ -241,7 +264,7 @@ make clean
 make pre-commit
 🐛 Устранение неполадок
 Проблема: "Please check your username and password"
-Решение: Создайте пользователя (см. раздел "Управление пользователями")
+Решение: Зарегистрируйтесь через форму регистрации или создайте пользователя через командную строку
 
 Проблема: Сессия сбрасывается при обновлении
 Решение: Проверьте, что SECRET_KEY одинаковый для всех экземпляров
