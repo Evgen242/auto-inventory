@@ -1,30 +1,15 @@
-name: Update README with Latest Stats
+name: Update README Stats
 
 on:
   schedule:
     - cron: '0 */12 * * *'
   workflow_dispatch:
-  push:
-    branches: [ main ]
-    paths:
-      - 'app/models/*.py'
-      - 'scripts/update_stats.py'
 
 jobs:
   update-stats:
     runs-on: ubuntu-latest
+    if: false  # Временно отключено, требует настройки API
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      
-      - name: Install dependencies
-        run: pip install requests
-      
-      - name: Fetch statistics
-        run: python scripts/update_stats.py
-        env:
-          PYTHONUNBUFFERED: 1
+      - name: Skip for now
+        run: echo "Stats update disabled - requires API configuration"
