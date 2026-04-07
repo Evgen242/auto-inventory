@@ -1,5 +1,4 @@
 """Тесты для статистики"""
-import pytest
 
 
 def test_dashboard_page_requires_auth(client):
@@ -74,7 +73,6 @@ def test_cars_count_available(authenticated_client):
 
 def test_brand_list_available(authenticated_client, app):
     """Тест: можно получить список брендов"""
-    from app import db
     from app.models.car import CarBrand
 
     with app.app_context():
@@ -85,7 +83,6 @@ def test_brand_list_available(authenticated_client, app):
 
 def test_warehouse_list_available(authenticated_client, app):
     """Тест: можно получить список складов"""
-    from app import db
     from app.models.warehouse import Warehouse
 
     with app.app_context():

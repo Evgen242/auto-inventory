@@ -1,5 +1,4 @@
 """Дополнительные тесты для статистики"""
-import pytest
 from app import db
 from app.models.car import Car, CarBrand
 from app.models.warehouse import Warehouse
