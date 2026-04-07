@@ -121,8 +121,8 @@ bash
 git clone https://github.com/Evgen242/auto-inventory.git
 cd auto-inventory
 
-# Копирование конфигурации
-cp .env.docker.example .env.docker
+# Копирование конфигурации (шаблон → реальный файл)
+cp config/.env.example config/.env.docker
 
 # Запуск
 docker compose -f docker-compose-dev.yml up -d
@@ -150,7 +150,7 @@ source venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
 
 # Настройка переменных окружения
-cp .env.example .env
+cp config/.env.example .env
 # Отредактируйте .env (SECRET_KEY, DATABASE_URL)
 
 # Запуск приложения
@@ -202,6 +202,53 @@ with app.app_context():
     db.session.commit()
     print(f'✅ {user.username} теперь администратор')
 "
+🤖 Telegram уведомления
+Система отправляет уведомления о:
+
+Входе администратора
+
+Регистрации нового пользователя
+
+Ежедневной статистике (через cron)
+
+Проблемах с сервером (автоматическое восстановление)
+
+Настройка
+Создайте бота в Telegram через @BotFather.
+
+Получите токен (например, 123456:ABC...).
+
+Узнайте свой chat_id (напишите боту любое сообщение, затем выполните:
+
+bash
+curl -s "https://api.telegram.org/bot<ТОКЕН>/getUpdates" | grep chat
+Добавьте в config/.env (или config/.env.docker для Docker) строки:
+
+ini
+TELEGRAM_BOT_TOKEN=ваш_токен
+TELEGRAM_CHAT_ID=ваш_id
+Перезапустите приложение.
+
+💡 Тестовое сообщение: ./daily_stats.sh отправит текущую статистику.
+
+📊 Мониторинг и бэкапы
+Проверка здоровья сервисов
+bash
+./monitoring/health_check.sh
+Автоматическое восстановление (auto-heal)
+Скрипт monitoring/auto_heal.sh перезапускает упавшие сервисы. Добавлен в cron:
+
+bash
+*/5 * * * * /var/www/apps/auto-inventory/monitoring/auto_heal.sh
+Бэкапы
+Ежедневно в 2:00 создаётся бэкап PostgreSQL (production и Docker), конфигов и Docker volume.
+
+Старые бэкапы (старше 30 дней) удаляются автоматически.
+
+Логи бэкапов: /var/backups/auto-inventory/backup.log
+
+Запуск вручную: ./backup.sh
+
 📡 API Endpoints
 Метод	Endpoint	Описание	Доступ
 GET	/api/cars	Список автомобилей	✅ Авторизованные
@@ -231,6 +278,7 @@ curl -b cookies.txt http://localhost:5000/api/me
 Workflow	Триггер	Действие
 check.yml	Push в main	Проверка качества кода (flake8, black)
 test.yml	Push в main	Линтинг и проверка секретов
+dockerhub.yml	Push в main	Сборка и публикация образа в Docker Hub
 📁 Структура проекта
 text
 auto-inventory/
@@ -238,14 +286,17 @@ auto-inventory/
 │   ├── models/            # Модели данных
 │   ├── routes/            # Маршруты API
 │   └── templates/         # HTML шаблоны
-├── tests/                 # Тесты
+├── config/                # Конфигурация (.env, .env.docker, .env.example)
 ├── deploy/                # Скрипты деплоя
+├── monitoring/            # Скрипты мониторинга и авто-восстановления
+├── tests/                 # Тесты
 ├── Dockerfile             # Docker образ
-├── docker-compose-dev.yml # Docker Compose
+├── docker-compose-dev.yml # Docker Compose (development)
+├── docker-compose.prod.yml# Docker Compose (production)
 ├── requirements.txt       # Python зависимости
-├── config.py              # Конфигурация
-├── Makefile              # Команды для разработки
-└── README.md             # Документация
+├── config.py              # Конфигурация приложения
+├── Makefile               # Команды для разработки
+└── README.md              # Документация
 🛠 Команды для разработки
 bash
 # Запуск всех тестов
@@ -263,24 +314,11 @@ make clean
 # Проверка форматирования
 make pre-commit
 🐛 Устранение неполадок
-Проблема: "Please check your username and password"
-Решение: Зарегистрируйтесь через форму регистрации или создайте пользователя через командную строку
-
-Проблема: Сессия сбрасывается при обновлении
-Решение: Проверьте, что SECRET_KEY одинаковый для всех экземпляров
-
-Проблема: Docker не запускается
-Решение: Очистите и пересоберите
-
-bash
-docker compose -f docker-compose-dev.yml down -v
-docker compose -f docker-compose-dev.yml up -d --build
-Проблема: Нет места на диске
-Решение: Очистите Docker
-
-bash
-docker system prune -a -f --volumes
-sudo journalctl --vacuum-size=50M
+Проблема	Решение
+"Please check your username and password"	Зарегистрируйтесь через форму регистрации или создайте пользователя через командную строку
+Сессия сбрасывается при обновлении	Проверьте, что SECRET_KEY одинаковый для всех экземпляров
+Docker не запускается	Очистите и пересоберите: docker compose -f docker-compose-dev.yml down -v && docker compose -f docker-compose-dev.yml up -d --build
+Нет места на диске	Очистите Docker: docker system prune -a -f --volumes и логи: sudo journalctl --vacuum-size=50M
 📝 Лицензия
 MIT License
 
