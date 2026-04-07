@@ -44,14 +44,14 @@ cd auto-inventory
 
 # 3. Настройка окружения
 echo -e "\n${YELLOW}3. Настройка окружения...${NC}"
-if [ ! -f .env.docker ]; then
-    cp .env.docker.example .env.docker
+if [ ! -f config/.env.docker ]; then
+    cp config/config/.env.example config/.env.docker
     # Генерируем случайный SECRET_KEY
     NEW_SECRET_KEY=$(openssl rand -base64 32)
-    sed -i "s/change-this-to-your-secret-key/$NEW_SECRET_KEY/" .env.docker
-    echo -e "${GREEN}✅ .env.docker создан с новым SECRET_KEY${NC}"
+    sed -i "s/change-this-to-your-secret-key/$NEW_SECRET_KEY/" config/.env.docker
+    echo -e "${GREEN}✅ config/.env.docker создан с новым SECRET_KEY${NC}"
 else
-    echo -e "${GREEN}✅ .env.docker уже существует${NC}"
+    echo -e "${GREEN}✅ config/.env.docker уже существует${NC}"
 fi
 
 # 4. Запуск Docker контейнеров

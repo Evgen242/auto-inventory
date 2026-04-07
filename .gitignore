@@ -21,7 +21,7 @@ instance/
 *.pid
 *.seed
 
-# Конфиги с секретами
+# Конфиги с секретами (старые пути)
 .env
 .env.local
 .env.production
@@ -42,32 +42,25 @@ Thumbs.db
 *.bak
 *.backup
 *.pid
-cookies.txt
 *_cookies.txt
 session.txt
 *.cookies
 *.session
 routes/requirements.txt
-.env
-.env.docker
-instance/
-__pycache__/
+
+# Тесты и покрытие
 .pytest_cache/
 .coverage
 coverage.xml
 htmlcov/
-.env.docker
+
+# Secrets directory (новые пути)
+config/.env
+config/.env.docker
+config/.env.*
+!.env.example
 
 # Backup files
 *.backup
 *.bak
 *.template.sh
-
-# IDE
-.vscode/
-.idea/
-*.swp
-
-# OS
-.DS_Store
-Thumbs.db

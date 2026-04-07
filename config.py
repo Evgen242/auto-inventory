@@ -1,8 +1,10 @@
 import os
+from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 
-load_dotenv()
+env_path = Path(__file__).parent / "config" / ".env"
+load_dotenv(dotenv_path=env_path)
 
 
 class Config:

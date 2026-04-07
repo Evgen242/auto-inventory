@@ -6,7 +6,7 @@ echo "🚀 Starting Docker development environment"
 cd /var/www/apps/auto-inventory
 
 # Экспортируем переменные
-if [ -f .env ]; then
+if [ -f config/.env ] -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 

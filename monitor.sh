@@ -5,8 +5,8 @@ APP_URL="http://localhost:5000/health"
 LOG_FILE="/var/log/auto-inventory-monitor.log"
 
 # Читаем Telegram настройки напрямую из .env
-TELEGRAM_BOT_TOKEN=$(grep "^TELEGRAM_BOT_TOKEN=" /var/www/apps/auto-inventory/.env 2>/dev/null | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
-TELEGRAM_CHAT_ID=$(grep "^TELEGRAM_CHAT_ID=" /var/www/apps/auto-inventory/.env 2>/dev/null | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
+TELEGRAM_BOT_TOKEN=$(grep "^TELEGRAM_BOT_TOKEN=" /var/www/apps/auto-inventory/config/.env 2>/dev/null | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
+TELEGRAM_CHAT_ID=$(grep "^TELEGRAM_CHAT_ID=" /var/www/apps/auto-inventory/config/.env 2>/dev/null | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
 
 # Функция отправки в Telegram
 send_telegram() {

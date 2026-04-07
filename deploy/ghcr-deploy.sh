@@ -17,17 +17,17 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Создание .env файла
-if [ ! -f .env.ghcr ]; then
-    echo -e "${YELLOW}Создаем .env.ghcr...${NC}"
-    cat > .env.ghcr << 'ENVEOF'
+if [ ! -f config/.env.ghcr ]; then
+    echo -e "${YELLOW}Создаем config/.env.ghcr...${NC}"
+    cat > config/.env.ghcr << 'ENVEOF'
 DB_PASSWORD=$(openssl rand -base64 16)
 SECRET_KEY=$(openssl rand -base64 32)
 ENVEOF
-    echo -e "${GREEN}✅ .env.ghcr создан${NC}"
+    echo -e "${GREEN}✅ config/.env.ghcr создан${NC}"
 fi
 
 # Загрузка переменных
-export $(grep -v '^#' .env.ghcr | xargs)
+export $(grep -v '^#' config/.env.ghcr | xargs)
 
 # Pull образа из GHCR
 echo -e "${YELLOW}Pulling image from GHCR...${NC}"

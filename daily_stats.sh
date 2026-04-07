@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Читаем Telegram настройки из .env
-if [ -f /var/www/apps/auto-inventory/.env ]; then
-    TELEGRAM_BOT_TOKEN=$(grep "^TELEGRAM_BOT_TOKEN=" /var/www/apps/auto-inventory/.env | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
-    TELEGRAM_CHAT_ID=$(grep "^TELEGRAM_CHAT_ID=" /var/www/apps/auto-inventory/.env | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
+if [ -f /var/www/apps/auto-inventory/config/.env ]; then
+    TELEGRAM_BOT_TOKEN=$(grep "^TELEGRAM_BOT_TOKEN=" /var/www/apps/auto-inventory/config/.env | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
+    TELEGRAM_CHAT_ID=$(grep "^TELEGRAM_CHAT_ID=" /var/www/apps/auto-inventory/config/.env | cut -d'=' -f2- | tr -d '"' | tr -d "'" | xargs)
 fi
 
 # Параметры PostgreSQL
