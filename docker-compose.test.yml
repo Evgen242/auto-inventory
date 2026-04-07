@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: auto_inventory
+      POSTGRES_USER: deploy
+      POSTGRES_PASSWORD: deploy123
+  app:
+    image: ghcr.io/evgen242/auto-inventory:latest
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://deploy:deploy123@postgres:5432/auto_inventory
+      - SECRET_KEY=test-secret-key
+    depends_on:
+      - postgres
