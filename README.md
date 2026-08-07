@@ -1,6 +1,4 @@
 # Auto Inventory System
-# Auto Inventory System
-
 ![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)
 ![Flask](https://img.shields.io/badge/Flask-3.x-black?logo=flask)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-blue?logo=postgresql)
@@ -9,13 +7,48 @@
 ![Nginx](https://img.shields.io/badge/Nginx-Reverse%20Proxy-green?logo=nginx)
 ![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue?logo=githubactions)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-
 [![GitHub stars](https://img.shields.io/github/stars/Evgen242/auto-inventory?style=social)](https://github.com/Evgen242/auto-inventory)
 [![GitHub forks](https://img.shields.io/github/forks/Evgen242/auto-inventory?style=social)](https://github.com/Evgen242/auto-inventory)
 
-Vehicle inventory management system built with Flask and PostgreSQL for managing vehicles across multiple warehouses with authentication, role-based access control, analytics, and REST API.
+---
 
 Vehicle inventory management system built with Flask and PostgreSQL for managing vehicles across multiple warehouses with authentication, role-based access control, analytics, and REST API.
+
+---
+
+## Project Status
+
+![Status](https://img.shields.io/badge/status-production--ready-success)
+
+The application is deployed on a Linux VPS and includes:
+
+- Docker-based deployment
+- PostgreSQL database
+- Nginx reverse proxy
+- Automated backups
+- Monitoring
+- CI/CD pipeline
+  
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [REST API](#rest-api)
+- [Monitoring](#monitoring)
+- [Backup](#backup)
+- [CI/CD](#cicd)
+- [Security](#security)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Future Improvements](#future-improvements)
+- [License](#license)
+- [Author](#author)
 
 ---
 
