@@ -1,38 +1,49 @@
 # Auto Inventory System
 
-Inventory management system built with Flask and PostgreSQL for managing vehicles across multiple warehouses with authentication, role-based access control, analytics, and REST API.
+Vehicle inventory management system built with Flask and PostgreSQL for managing vehicles across multiple warehouses with authentication, role-based access control, analytics, and REST API.
 
 ---
 
-## Overview
+# Overview
 
 Auto Inventory System is a full-stack web application designed for centralized vehicle inventory management.
 
-The application provides authentication, warehouse management, vehicle registration, analytics dashboards, and role-based authorization. It supports both local development and production deployment using Docker, PostgreSQL, Gunicorn, and Nginx.
+The application provides a complete workflow for storing, searching, analyzing, and managing vehicle inventory across multiple warehouses.
+
+The system includes:
+
+- User authentication
+- Role-based authorization
+- Vehicle inventory management
+- Warehouse management
+- Brand management
+- Analytics dashboard
+- REST API
+- Docker deployment
+- CI/CD automation
+- Monitoring and backup system
 
 The project demonstrates practical implementation of:
 
-- Flask web framework
+- Flask backend architecture
 - SQLAlchemy ORM
-- PostgreSQL database
-- Authentication and authorization
-- REST API architecture
-- Warehouse management
-- Inventory analytics
-- Docker containerization
-- GitHub Actions CI/CD
-- Linux VPS deployment
-- Monitoring and automated backup
+- PostgreSQL database design
+- Secure authentication
+- REST API development
+- Containerized deployment
+- Linux VPS production environment
+- Automated DevOps processes
 
 ---
 
-## Demo
+# Demo
 
-**Application**
+Application:
 
 https://autolot25.ddns.net:8086
 
-### Demo Account
+
+## Demo Account
 
 | Username | Password | Access |
 |----------|----------|--------|
@@ -40,82 +51,114 @@ https://autolot25.ddns.net:8086
 
 ---
 
-## Features
+# Features
 
-### Authentication
+## Authentication
 
 - User registration
-- Secure authentication
+- Login/logout system
+- Secure password hashing
 - Session management
 - Remember Me functionality
-- Role-based authorization
+- Role-based permissions
 
-### Vehicle Management
 
-- Vehicle registration
-- VIN management
-- Warehouse assignment
-- Brand management
-- Inventory updates
-- Ownership tracking
+## Vehicle Management
 
-### Warehouse Management
+- Add vehicles
+- Edit vehicle information
+- Delete vehicles according to permissions
+- Store VIN numbers
+- Assign vehicles to warehouses
+- Assign vehicles to brands
+- Track vehicle ownership
 
-- Multiple warehouse support
-- Warehouse occupancy monitoring
-- Vehicle allocation
 
-### Search & Filtering
+## Warehouse Management
 
-- Search by model
+- Create warehouses
+- Store warehouse locations
+- Track warehouse inventory
+- Monitor warehouse loading
+
+
+## Brand Management
+
+- Create vehicle brands
+- Remove brands
+- Manage brand catalog
+
+
+## Search and Filtering
+
+- Search by vehicle model
 - Search by VIN
 - Search by brand
 - Filter by warehouse
 - Filter by production year
-- Filter by price
-- Pagination
+- Filter by price range
 - Sorting
+- Pagination
 
-### Analytics
 
-- Dashboard
-- Vehicle statistics
+## Analytics
+
+Dashboard includes:
+
+- Total vehicle count
+- Vehicle distribution by brand
 - Warehouse utilization
-- Brand distribution
+- Production year statistics
 - Most expensive vehicles
-- Production year distribution
+- Inventory overview
 
-### Administration
 
-- User management
-- Brand management
-- Warehouse management
-- Vehicle editing
-- Full administrative access
+## DevOps Features
 
-### DevOps
-
-- Docker support
-- Docker Compose
-- GitHub Actions
-- Automated deployment
+- Docker containerization
+- Docker Compose deployment
+- GitHub Actions CI/CD
+- Automatic deployment
 - Health monitoring
-- Backup system
+- Auto recovery
+- PostgreSQL backups
 - Telegram notifications
 
 ---
 
-## Technology Stack
+# User Roles
+
+The system implements Role-Based Access Control (RBAC).
+
+| Feature | Demo | User | Admin |
+|---------|:----:|:----:|:-----:|
+| View vehicles | ✅ | ✅ | ✅ |
+| Search and filtering | ✅ | ✅ | ✅ |
+| View statistics | ✅ | ✅ | ✅ |
+| Add vehicles | ❌ | ✅ | ✅ |
+| Delete own vehicles | ❌ | ✅ | ✅ |
+| Delete any vehicle | ❌ | ❌ | ✅ |
+| Edit vehicles | ❌ | ❌ | ✅ |
+| Manage brands | ❌ | ❌ | ✅ |
+| Manage warehouses | ❌ | ❌ | ✅ |
+| Administration panel | ❌ | ❌ | ✅ |
+
+
+The first registered user automatically receives administrator privileges.
+
+---
+
+# Technology Stack
 
 | Component | Technology |
-|------------|------------|
+|-----------|------------|
 | Backend | Python 3.10 |
 | Framework | Flask |
 | ORM | SQLAlchemy |
 | Database | PostgreSQL |
 | Frontend | HTML5, CSS3, Bootstrap 5, JavaScript |
 | Authentication | Flask-Login |
-| Password Hashing | Werkzeug |
+| Security | Werkzeug |
 | WSGI Server | Gunicorn |
 | Reverse Proxy | Nginx |
 | Containerization | Docker |
@@ -126,48 +169,100 @@ https://autolot25.ddns.net:8086
 
 ---
 
-## Architecture
+# Architecture
 
 ```mermaid
 flowchart TD
 
-    Browser
+    Client[Browser]
 
-    subgraph Server
+    subgraph Production Server
 
-        Nginx
+        Nginx[Nginx Reverse Proxy]
 
-        Gunicorn
+        Gunicorn[Gunicorn WSGI Server]
 
-        Flask
+        Flask[Flask Application]
 
-        SQLAlchemy
+        ORM[SQLAlchemy ORM]
 
-        PostgreSQL
+        PostgreSQL[(PostgreSQL Database)]
 
     end
 
-    Browser --> Nginx
+
+    Client --> Nginx
     Nginx --> Gunicorn
     Gunicorn --> Flask
-    Flask --> SQLAlchemy
-    SQLAlchemy --> PostgreSQL
+    Flask --> ORM
+    ORM --> PostgreSQL
 ```
 
 ---
 
-## Project Structure
+# Deployment Architecture
+
+```mermaid
+flowchart LR
+
+    User[User Browser]
+
+    Internet
+
+    Server[Linux VPS]
+
+    Nginx
+
+    Docker
+
+    App[Flask Container]
+
+    DB[(PostgreSQL)]
+
+    Backup[Backup System]
+
+    Monitoring[Monitoring]
+
+
+    User --> Internet
+    Internet --> Nginx
+
+    Nginx --> Docker
+
+    Docker --> App
+    Docker --> DB
+
+    Backup --> DB
+
+    Monitoring --> Docker
+```
+
+---
+
+# Project Structure
 
 ```text
 auto-inventory/
 
 ├── app/
 │   ├── models/
+│   │   ├── user.py
+│   │   ├── car.py
+│   │   ├── brand.py
+│   │   └── warehouse.py
+│   │
 │   ├── routes/
+│   │   ├── auth.py
+│   │   ├── cars.py
+│   │   ├── brands.py
+│   │   ├── warehouses.py
+│   │   └── stats.py
+│   │
 │   ├── services/
+│   │
 │   ├── templates/
-│   ├── static/
-│   └── __init__.py
+│   │
+│   └── static/
 │
 ├── config/
 │   ├── .env.example
@@ -208,52 +303,52 @@ cd auto-inventory
 
 ---
 
-## Automatic Deployment
+# Automatic Deployment
 
-The project includes an automated installation script for Ubuntu servers.
+The project provides an automated deployment script for Ubuntu servers.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Evgen242/auto-inventory/main/deploy/auto-deploy.sh | bash
 ```
 
-The script automatically:
+The script performs:
 
-- Installs Docker
-- Installs Docker Compose
-- Clones the repository
-- Configures the environment
-- Builds Docker images
-- Starts all services
+- Docker installation
+- Docker Compose installation
+- Repository cloning
+- Environment configuration
+- Container build
+- Application startup
 
 ---
 
-## Run with Docker
+# Run with Docker
 
-Copy the environment template.
+Create environment configuration:
 
 ```bash
 cp config/.env.example config/.env.docker
 ```
 
-Build and start the application.
+Build and start containers:
 
 ```bash
 docker compose -f docker-compose-dev.yml up -d --build
 ```
 
-Verify running containers.
+Check containers:
 
 ```bash
 docker compose -f docker-compose-dev.yml ps
 ```
 
-View logs.
+View logs:
 
 ```bash
 docker compose -f docker-compose-dev.yml logs -f
 ```
 
-Stop the application.
+Stop application:
 
 ```bash
 docker compose -f docker-compose-dev.yml down
@@ -261,41 +356,41 @@ docker compose -f docker-compose-dev.yml down
 
 ---
 
-## Run Locally
+# Local Development
 
-Create a virtual environment.
+Create virtual environment:
 
 ```bash
 python3 -m venv venv
 ```
 
-Activate the environment.
+Activate:
 
-Linux/macOS
+Linux/macOS:
 
 ```bash
 source venv/bin/activate
 ```
 
-Windows
+Windows:
 
 ```cmd
 venv\Scripts\activate
 ```
 
-Install dependencies.
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Copy environment configuration.
+Configure environment:
 
 ```bash
 cp config/.env.example .env
 ```
 
-Run the application.
+Run application:
 
 ```bash
 python run.py
@@ -303,33 +398,41 @@ python run.py
 
 ---
 
-## Docker Commands
+# Docker Commands
 
-Rebuild containers.
+## Rebuild Application
 
 ```bash
 docker compose -f docker-compose-dev.yml up -d --build
 ```
 
-View running containers.
+---
+
+## Check Containers
 
 ```bash
 docker compose -f docker-compose-dev.yml ps
 ```
 
-Application logs.
+---
+
+## Application Logs
 
 ```bash
 docker compose -f docker-compose-dev.yml logs -f app-dev
 ```
 
-Enter application container.
+---
+
+## Enter Container
 
 ```bash
 docker exec -it auto_inventory_app_dev bash
 ```
 
-Remove containers and volumes.
+---
+
+## Remove Containers and Volumes
 
 ```bash
 docker compose -f docker-compose-dev.yml down -v
@@ -337,279 +440,29 @@ docker compose -f docker-compose-dev.yml down -v
 
 ---
 
-## Configuration
+# Configuration
 
 The application uses environment variables for configuration.
 
-Create a local configuration file.
+Example:
 
 ```bash
 cp config/.env.example .env
 ```
 
-For Docker deployment.
+Docker environment:
 
 ```bash
 cp config/.env.example config/.env.docker
 ```
----
 
-# User Roles
+Configuration includes:
 
-The application implements role-based access control (RBAC).
-
-| Feature | Demo | User | Admin |
-|----------|:----:|:----:|:-----:|
-| View vehicles | ✅ | ✅ | ✅ |
-| Search and filtering | ✅ | ✅ | ✅ |
-| Dashboard | ✅ | ✅ | ✅ |
-| Create vehicles | ❌ | ✅ | ✅ |
-| Delete own vehicles | ❌ | ✅ | ✅ |
-| Delete any vehicle | ❌ | ❌ | ✅ |
-| Edit vehicles | ❌ | ❌ | ✅ |
-| Manage brands | ❌ | ❌ | ✅ |
-| Manage warehouses | ❌ | ❌ | ✅ |
-| Administration | ❌ | ❌ | ✅ |
-
-The first registered user automatically receives administrator privileges.
-
----
-
-# Authentication
-
-The application uses Flask-Login for session-based authentication.
-
-Features include:
-
-- User registration
-- Login / Logout
-- Secure password hashing
-- Session timeout
-- Remember Me functionality
-- Cookie-based authentication
-- Role-based authorization
-
----
-
-# REST API
-
-## Authentication
-
-### Login
-
-```
-POST /auth/login
-```
-
-### Register
-
-```
-POST /auth/register
-```
-
----
-
-## Vehicles
-
-### Get Vehicles
-
-```
-GET /api/cars
-```
-
-### Create Vehicle
-
-```
-POST /api/cars
-```
-
-### Delete Vehicle
-
-```
-DELETE /api/cars/{id}
-```
-
----
-
-## Brands
-
-### Get Brands
-
-```
-GET /api/brands
-```
-
-### Create Brand
-
-```
-POST /api/brands
-```
-
----
-
-## Warehouses
-
-### Get Warehouses
-
-```
-GET /api/warehouses
-```
-
-### Create Warehouse
-
-```
-POST /api/warehouses
-```
-
----
-
-## Statistics
-
-```
-GET /api/stats
-```
-
----
-
-## Current User
-
-```
-GET /api/me
-```
-
----
-
-# Example API Request
-
-```bash
-curl -c cookies.txt \
--X POST http://localhost:5000/auth/login \
--d "username=admin" \
--d "password=password123"
-```
-
-Retrieve vehicles.
-
-```bash
-curl -b cookies.txt \
-http://localhost:5000/api/cars
-```
-
-Retrieve statistics.
-
-```bash
-curl -b cookies.txt \
-http://localhost:5000/api/stats
-```
-
----
-
-# Request Processing Flow
-
-```mermaid
-sequenceDiagram
-
-    participant User
-    participant Browser
-    participant Flask
-    participant SQLAlchemy
-    participant PostgreSQL
-
-    User->>Browser: HTTP Request
-
-    Browser->>Flask: REST Request
-
-    Flask->>SQLAlchemy: ORM Query
-
-    SQLAlchemy->>PostgreSQL: SQL Query
-
-    PostgreSQL-->>SQLAlchemy: Data
-
-    SQLAlchemy-->>Flask: Models
-
-    Flask-->>Browser: JSON / HTML Response
-
-    Browser-->>User: Render Result
-```
-
----
-
-# Monitoring
-
-The application includes built-in monitoring scripts for production environments.
-
-Available features:
-
-- Health checks
-- Automatic service recovery
-- Cron integration
-- Log monitoring
+- Database connection
+- Security settings
+- Session configuration
 - Telegram notifications
-
-Run health check.
-
-```bash
-./monitoring/health_check.sh
-```
-
-Automatic recovery.
-
-```bash
-./monitoring/auto_heal.sh
-```
-
----
-
-# Backup
-
-Daily backup includes:
-
-- PostgreSQL database
-- Docker volumes
-- Configuration files
-
-Manual backup.
-
-```bash
-./backup.sh
-```
-
-Backup retention:
-
-- Daily backups
-- Automatic cleanup after 30 days
-
----
-
-# Telegram Notifications
-
-Optional Telegram integration provides notifications for:
-
-- Administrator login
-- New user registration
-- Daily statistics
-- Server failures
-- Automatic recovery
-
-Required environment variables:
-
-```text
-TELEGRAM_BOT_TOKEN=
-TELEGRAM_CHAT_ID=
-```
-
----
-
-# CI/CD
-
-GitHub Actions automatically performs:
-
-| Workflow | Description |
-|-----------|-------------|
-| Code Quality | Linting and formatting |
-| Security Check | Secret scanning |
-| Docker Build | Docker image creation |
-| Docker Publish | Push image to Docker Hub |
+- Application parameters
 
 ---
 
@@ -617,54 +470,443 @@ GitHub Actions automatically performs:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| SECRET_KEY | Flask secret key | Yes |
-| DATABASE_URL | PostgreSQL connection string | Yes |
-| SESSION_TIMEOUT | Session timeout | No |
-| TELEGRAM_BOT_TOKEN | Telegram bot token | No |
-| TELEGRAM_CHAT_ID | Telegram chat ID | No |
+| `SECRET_KEY` | Flask application secret key | Yes |
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `SESSION_TIMEOUT` | User session lifetime | No |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot token | No |
+| `TELEGRAM_CHAT_ID` | Telegram notification chat | No |
 
 ---
 
-# Development
+# Database
 
-Run all tests.
+The application uses PostgreSQL as the main database.
+
+Main entities:
+
+```mermaid
+erDiagram
+
+    USER ||--o{ CAR : creates
+
+    BRAND ||--o{ CAR : contains
+
+    WAREHOUSE ||--o{ CAR : stores
+
+
+    USER {
+        int id
+        string username
+        string email
+        boolean is_admin
+    }
+
+    CAR {
+        int id
+        string model
+        string vin
+        int year
+        float price
+        int quantity
+    }
+
+    BRAND {
+        int id
+        string name
+    }
+
+    WAREHOUSE {
+        int id
+        string name
+        string location
+    }
+```
+
+---
+
+# REST API
+
+The application provides REST endpoints for integration with external systems.
+
+---
+
+## Authentication API
+
+### Login
+
+```
+POST /auth/login
+```
+
+Example:
+
+```bash
+curl -X POST http://localhost:5000/auth/login \
+-d "username=admin" \
+-d "password=password123"
+```
+
+---
+
+### Registration
+
+```
+POST /auth/register
+```
+
+---
+
+# Vehicle API
+
+## Get Vehicles
+
+```
+GET /api/cars
+```
+
+Access:
+
+```
+Authenticated users
+```
+
+---
+
+## Create Vehicle
+
+```
+POST /api/cars
+```
+
+Access:
+
+```
+User, Admin
+```
+
+Example:
+
+```json
+{
+  "model": "Toyota Camry",
+  "year": 2024,
+  "vin": "JT123456789",
+  "price": 35000,
+  "brand_id": 1,
+  "warehouse_id": 1
+}
+```
+
+---
+
+## Delete Vehicle
+
+```
+DELETE /api/cars/{id}
+```
+
+Permissions:
+
+- User → own vehicles only
+- Admin → all vehicles
+
+---
+
+# Brand API
+
+## Get Brands
+
+```
+GET /api/brands
+```
+
+---
+
+## Create Brand
+
+```
+POST /api/brands
+```
+
+Access:
+
+```
+Admin only
+```
+
+---
+
+# Warehouse API
+
+## Get Warehouses
+
+```
+GET /api/warehouses
+```
+
+---
+
+## Create Warehouse
+
+```
+POST /api/warehouses
+```
+
+Access:
+
+```
+Admin only
+```
+
+---
+
+# Statistics API
+
+```
+GET /api/stats
+```
+
+Returns:
+
+- Total vehicles
+- Brand statistics
+- Warehouse utilization
+- Price analytics
+- Production year distribution
+
+---
+
+# Current User API
+
+```
+GET /api/me
+```
+
+Returns authenticated user information.
+
+Example response:
+
+```json
+{
+  "username": "admin",
+  "email": "admin@example.com",
+  "is_admin": true
+}
+```
+
+---
+
+# API Request Flow
+
+```mermaid
+sequenceDiagram
+
+    participant Client
+    participant Nginx
+    participant Flask
+    participant SQLAlchemy
+    participant PostgreSQL
+
+
+    Client->>Nginx: HTTP Request
+
+    Nginx->>Flask: Forward Request
+
+    Flask->>SQLAlchemy: Database Query
+
+    SQLAlchemy->>PostgreSQL: SQL Request
+
+    PostgreSQL-->>SQLAlchemy: Result
+
+    SQLAlchemy-->>Flask: Object Data
+
+    Flask-->>Client: JSON Response
+```
+
+---
+
+# Monitoring
+
+The project includes monitoring and automatic recovery tools.
+
+Features:
+
+- Service health checks
+- Automatic restart
+- Cron integration
+- Error notifications
+- Container monitoring
+
+---
+
+## Health Check
+
+```bash
+./monitoring/health_check.sh
+```
+
+---
+
+## Auto Recovery
+
+```bash
+./monitoring/auto_heal.sh
+```
+
+Example cron configuration:
+
+```bash
+*/5 * * * * /var/www/apps/auto-inventory/monitoring/auto_heal.sh
+```
+
+---
+
+# Backup System
+
+The backup system automatically creates:
+
+- PostgreSQL database backups
+- Docker volume backups
+- Configuration backups
+
+Schedule:
+
+```
+Daily at 02:00
+```
+
+Retention:
+
+```
+30 days
+```
+
+Manual execution:
+
+```bash
+./backup.sh
+```
+
+Backup logs:
+
+```
+/var/backups/auto-inventory/backup.log
+```
+
+---
+
+# Telegram Notifications
+
+Optional Telegram integration provides operational alerts.
+
+Notifications:
+
+- Administrator login
+- New user registration
+- Daily statistics
+- Server problems
+- Automatic recovery events
+
+
+Required configuration:
+
+```env
+TELEGRAM_BOT_TOKEN=your_token
+TELEGRAM_CHAT_ID=your_chat_id
+```
+
+---
+
+# CI/CD Pipeline
+
+The project uses GitHub Actions for automation.
+
+Pipeline:
+
+```mermaid
+flowchart LR
+
+    Developer
+
+    GitHub
+
+    Tests
+
+    Security
+
+    Docker
+
+    Deployment
+
+
+    Developer --> GitHub
+
+    GitHub --> Tests
+
+    Tests --> Security
+
+    Security --> Docker
+
+    Docker --> Deployment
+```
+
+---
+
+## Workflows
+
+| Workflow | Purpose |
+|----------|---------|
+| check.yml | Code quality checks |
+| test.yml | Automated testing |
+| dockerhub.yml | Docker image build and publish |
+
+---
+
+# Security
+
+Implemented security features:
+
+- Password hashing with Werkzeug
+- Session-based authentication
+- Role-based authorization
+- Environment-based secrets
+- HTTPS support through Nginx
+- Protected administrative operations
+
+---
+
+# Testing
+
+The project includes automated tests.
+
+Available commands:
+
+Run all tests:
 
 ```bash
 make test-all
 ```
 
-Unit tests.
+Unit tests:
 
 ```bash
 make test-unit
 ```
 
-Coverage.
+Coverage:
 
 ```bash
 make coverage
-```
-
-Clean project.
-
-```bash
-make clean
-```
-
-Run formatting checks.
-
-```bash
-make pre-commit
 ```
 
 ---
 
 # Validation
 
-The application has been validated using automated and manual testing.
+Validated components:
 
-| Metric | Result |
-|----------|--------|
+| Component | Status |
+|-----------|--------|
 | Authentication | ✅ |
 | Authorization | ✅ |
 | Vehicle CRUD | ✅ |
@@ -672,11 +914,13 @@ The application has been validated using automated and manual testing.
 | Brand CRUD | ✅ |
 | Search | ✅ |
 | Filtering | ✅ |
-| Dashboard | ✅ |
+| Pagination | ✅ |
 | REST API | ✅ |
-| Docker Deployment | ✅ |
 | PostgreSQL | ✅ |
+| Docker | ✅ |
 | CI/CD | ✅ |
+| Monitoring | ✅ |
+| Backup | ✅ |
 
 ---
 
@@ -684,57 +928,63 @@ The application has been validated using automated and manual testing.
 
 Production deployment includes:
 
+- Linux VPS
 - Docker Compose
 - Gunicorn
-- Nginx
+- Nginx Reverse Proxy
 - PostgreSQL
-- Automatic deployment
+- SSL certificates
 - Monitoring
-- Backup
-- SSL support
+- Backup automation
 
----
+Deployment workflow:
 
-# Project Requirements
+```mermaid
+flowchart TD
 
-| Requirement | Status |
-|--------------|--------|
-| Authentication | ✅ |
-| Role-based authorization | ✅ |
-| Vehicle management | ✅ |
-| Warehouse management | ✅ |
-| Brand management | ✅ |
-| Dashboard | ✅ |
-| REST API | ✅ |
-| PostgreSQL | ✅ |
-| Docker | ✅ |
-| GitHub Actions | ✅ |
-| Monitoring | ✅ |
-| Backup | ✅ |
+    GitHub
+
+    Server
+
+    Docker
+
+    Application
+
+    Database
+
+
+    GitHub --> Server
+
+    Server --> Docker
+
+    Docker --> Application
+
+    Docker --> Database
+```
 
 ---
 
 # Future Improvements
 
-Planned enhancements include:
+Planned improvements:
 
-- OpenAPI / Swagger documentation
-- Two-factor authentication (2FA)
+- Swagger / OpenAPI documentation
+- Advanced audit logging
 - Email notifications
-- Audit logging
-- Import/Export to Excel
-- VIN decoding service
-- Vehicle image uploads
+- Two-factor authentication
 - Redis caching
-- WebSocket notifications
+- Excel import/export
+- Vehicle image management
+- VIN decoder integration
+- Mobile application
 - Kubernetes deployment
-- Unit and integration testing
+- Advanced analytics
 
 ---
 
 # License
 
-This project is licensed under the **MIT License**.
+MIT License
 
 ---
 
@@ -746,6 +996,5 @@ GitHub:
 
 https://github.com/Evgen242
 
----
 
-If you find this project useful, consider giving it a ⭐ on GitHub.
+If this project is useful, consider giving it a star on GitHub.
